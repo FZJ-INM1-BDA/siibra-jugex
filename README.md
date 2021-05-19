@@ -4,10 +4,7 @@
 
 Copyright 2020-2021, Forschungszentrum Jülich GmbH 
 
-> :warning: **`siibra-jugex` is at an experimental stage.** The API is not
-stable, and the software is not yet fully tested. You are welcome to install and
-test it, but be aware that you will likely encounter bugs.
-
+> :warning: **`siibra-jugex` is at an experimental stage.** The software is not yet fully tested. Be aware that you will likely encounter bugs.
 
 JuGEx  (Julich-Brain Gene Expression) is an integrated framework develoepd to combined the AllenBrain and Julich-Brain atlases for statistical analysis of differential gene expression in the adult human brain.
 The framework has been developed by S. Bludau et al. and is described in the following publication:
