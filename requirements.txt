@@ -1,1 +1,3 @@
-siibra
+siibra>=0.1a1
+statsmodels
+scipy
