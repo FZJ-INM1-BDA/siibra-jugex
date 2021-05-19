@@ -13,17 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from . import logger
+
+from siibra import spaces
+MNI152SPACE = spaces.MNI152_2009C_NONL_ASYM
+from siibra.atlas import Atlas
+from siibra.features import gene_names, modalities
+
 from scipy.stats.mstats import winsorize
 from statsmodels.formula.api import ols
 import statsmodels.api as sm
 import numpy as np
 from concurrent import futures
-from siibra.atlas import Atlas
-from siibra import spaces,logger
-from siibra.features import gene_names, modalities
 from collections import defaultdict
 
-MNI152SPACE = spaces.MNI152_2009C_NONL_ASYM
 
 class DifferentialGeneExpression:
     """
@@ -44,11 +47,9 @@ class DifferentialGeneExpression:
 
     def __init__(self,atlas: Atlas, gene_names=[]):
         self._pvals = None
-        self._samples_by_regiondef = {}
-        self._regiondef1 = None
-        self._regiondef2 = None
-        self._samples1 = defaultdict(dict)
-        self._samples2 = defaultdict(dict)
+        self._index_by_regionspec = {}
+        self._regionspecs = [None,None]
+        self._sampledicts = [defaultdict(dict) for _ in range(2)]
         self.genes = set(gene_names)
         if not atlas.selected_parcellation.supports_space(MNI152SPACE):
             raise Exception(f"{MNI152SPACE.name} space not supported by selected parcellation {atlas.selected_parcellation}.")
@@ -91,11 +92,11 @@ class DifferentialGeneExpression:
         """
 
         if len(self.genes)==0:
-            logger.warn('No candidate genes defined. Use "add_candidate_gene"')
+            logger.error('No candidate genes defined. Use "add_candidate_gene"')
             return
 
-        if len(self._samples1)<1 or len(self._samples2)<1:
-            logger.warn('Not enough samples found for the given genes and regions.')
+        if any(len(samples)<1 for samples in self._sampledicts):
+            logger.error('Not enough samples found for the given genes and regions.')
             return
 
         # retrieve aggregated factors and split the constant donor factors
@@ -175,85 +176,77 @@ class DifferentialGeneExpression:
         self.genes.add(gene_name)
         return True
 
-    def define_roi1(self,regiondef):
+    def _define_roi(self,regionspec,roi_index):
+        """
+        (Re-)Defines a region of interest.
+
+        Parameters:
+        -----------
+
+        regionspec : str or list
+            Identifier or list of identifiers for a brain region in the
+            selected atlas parcellation
+        roi_index : 0 or 1
+            index of the roi to be updated
+        """
+        if type(regionspec) == str:
+            new_samples = self._retrieve_samples(regionspec)
+            if new_samples is None:
+                raise Exception("Could not define ROI.")
+            if self._regionspecs[roi_index] is not None:
+                self._index_by_regionspec.pop(roi_index)
+            self._regionspecs[roi_index] = regionspec
+            self._sampledicts[roi_index] = new_samples
+            self._index_by_regionspec[regionspec] = roi_index
+
+        elif type(regionspec) == list:
+            new_samples = None
+            for region in regionspec:
+                logger.info(region)
+                if new_samples is None:
+                    new_samples = self._retrieve_samples(region)
+                else:
+                    new_samples.update(self._retrieve_samples(region))
+            if new_samples is None:
+                raise Exception("Could not define ROI.")
+            if self._regionspecs[roi_index] is not None:
+                self._index_by_regionspec.pop(roi_index)
+            self._regionspecs[roi_index] = "Merged ROI1"
+            self._sampledicts[roi_index] = self._filter_samples(new_samples)
+            self._index_by_regionspec["Merged ROI1"] = roi_index
+
+        else:
+            logger.warning("Unsupported parameter in ROI")
+
+
+    def define_roi1(self,regionspec):
         """
         (Re-)Defines the first region of interest.
 
         Parameters:
         -----------
 
-        regiondef : str or list
+        regionspec : str or list
             Identifier or list of identifiers for a brain region in the
             selected atlas parcellation
         """
-        if type(regiondef) == str:
-            new_samples = self._retrieve_samples(regiondef)
-            if new_samples is None:
-                raise Exception("Could not define ROI 1.")
-            if self._regiondef1 is not None:
-                self._samples_by_regiondef.pop(self._regiondef1)
-            self._regiondef1 = regiondef
-            self._samples1 = new_samples
-            self._samples_by_regiondef[regiondef] = self._samples1
-        elif type(regiondef) == list:
-            new_samples = None
-            for region in regiondef:
-                print(region)
-                if new_samples is None:
-                    new_samples = self._retrieve_samples(region)
-                else:
-                    new_samples.update(self._retrieve_samples(region))
-            if new_samples is None:
-                raise Exception("Could not define ROI 1.")
-            if self._regiondef1 is not None:
-                self._samples_by_regiondef.pop(self._regiondef1)
-            self._regiondef1 = "Merged ROI1"
-            self._samples1 = self._filter_samples(new_samples)
-            self._samples_by_regiondef["Merged ROI1"] = self._samples1
-        else:
-            print("Unsupported parameter in ROI 1")
+        self._define_roi(regionspec,0)
 
 
-    def define_roi2(self,regiondef):
+    def define_roi2(self,regionspec):
         """
         (Re-)defines the second region of interest.
 
         Parameters:
         -----------
 
-        regiondef : str or list
+        regionspec : str or list
             Identifier or list of identifiers for a brain region in the
             selected atlas parcellation
         """
-        if type(regiondef) == str:
-            new_samples = self._retrieve_samples(regiondef)
-            if new_samples is None:
-                raise Exception("Could not define ROI 2.")
-            if self._regiondef2 is not None:
-                self._samples_by_regiondef.pop(self._regiondef2)
-            self._regiondef2 = regiondef
-            self._samples2 = new_samples
-            self._samples_by_regiondef[regiondef] = self._samples2
-        elif type(regiondef) == list:
-            new_samples = None
-            for region in regiondef:
-                print(region)
-                if new_samples is None:
-                    new_samples = self._retrieve_samples(region)
-                else:
-                    new_samples.update(self._retrieve_samples(region))
-            if new_samples is None:
-                raise Exception("Could not define ROI 2.")
-            if self._regiondef2 is not None:
-                self._samples_by_regiondef.pop(self._regiondef2)
-            self._regiondef2 = "Merged ROI2"
-            self._samples2 = self._filter_samples(new_samples)
-            self._samples_by_regiondef["Merged ROI2"] = self._samples2
-        else:
-            print("Unsupported parameter in ROI 2")
+        self._define_roi(regionspec,1)
 
-
-    def _retrieve_samples(self,regiondef):
+    def _retrieve_samples(self,regionspec):
         """
         Retrieves and prepares gene expression samples for the given region
         definition.
@@ -261,29 +254,29 @@ class DifferentialGeneExpression:
         Parameters:
         -----------
 
-        regiondef : str
+        regionspec : str
             Identifier for a brain region in the selected atlas parcellation
 
         Returns: dictionary
             Gene expression data samples for the provided region
         """
-        region = self.atlas.select_region(regiondef)
+        region = self.atlas.select_region(regionspec)
         if region is None:
-            logger.warn("Region definition '{}' could not be matched in atlas.".format(regiondef))
+            logger.warn("Region definition '{}' could not be matched in atlas.".format(regionspec))
             return None
         samples = defaultdict(dict)
         for gene_name in self.genes:
             for f in self.atlas.get_features(
                     modalities.GeneExpression,
                     gene=gene_name):
-                key = tuple(list(f.location)+[regiondef])
+                key = tuple(list(f.location)+[regionspec])
                 samples[key] = {**samples[key], **f.donor_info}
                 samples[key]['mnicoord'] = tuple(f.location)
                 samples[key]['region'] = region
                 samples[key][gene_name] =  np.mean(
                         winsorize(f.z_scores, limits=0.1))
         logger.info('{} samples found for region {}.'.format(
-            len(samples), regiondef))
+            len(samples), regionspec))
         return samples
 
 
@@ -317,7 +310,7 @@ class DifferentialGeneExpression:
         Creates a dictionary of flattened sample factors for the analysis from
         the two sets of collected samples per gene.
         """
-        samples = {**self._samples1, **self._samples2}
+        samples = {**self._sampledicts[0], **self._sampledicts[1]}
         factors = {
             'race' : [s['race'] for s in samples.values()],
             'age' : [s['age'] for s in samples.values()],
@@ -329,7 +322,7 @@ class DifferentialGeneExpression:
         }
         return factors
 
-    def get_samples(self,regiondef):
+    def get_samples(self,regionspec):
         """
         Returns the aggregated sampel information for the region specification
         that has been used previously to define a ROI using define_roi1() or
@@ -337,13 +330,14 @@ class DifferentialGeneExpression:
 
         Parameters
         ---------
-        regiondef : str
+        regionspec : str
             Region identifier string used previously in define_roi1() or define_roi2()
         """
-        if regiondef not in self._samples_by_regiondef.keys():
+        if regionspec not in self._index_by_regionspec.keys():
             logger.warn("The provided region definition string is not known.")
             return None
-        return self._samples_by_regiondef[regiondef]
+        roi_index = self._index_by_regionspec[regionspec]
+        return self._sampledicts[roi_index]
 
 
     def save(self,filename):
