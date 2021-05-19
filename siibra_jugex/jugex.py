@@ -194,7 +194,7 @@ class DifferentialGeneExpression:
             if new_samples is None:
                 raise Exception("Could not define ROI.")
             if self._regionspecs[roi_index] is not None:
-                self._index_by_regionspec.pop(roi_index)
+                self._index_by_regionspec.pop(regionspec)
             self._regionspecs[roi_index] = regionspec
             self._sampledicts[roi_index] = new_samples
             self._index_by_regionspec[regionspec] = roi_index
@@ -210,7 +210,7 @@ class DifferentialGeneExpression:
             if new_samples is None:
                 raise Exception("Could not define ROI.")
             if self._regionspecs[roi_index] is not None:
-                self._index_by_regionspec.pop(roi_index)
+                self._index_by_regionspec.pop(regionspec)
             self._regionspecs[roi_index] = "Merged ROI1"
             self._sampledicts[roi_index] = self._filter_samples(new_samples)
             self._index_by_regionspec["Merged ROI1"] = roi_index
