@@ -11,7 +11,9 @@ Copyright 2020-2021, Forschungszentrum Jülich GmbH
 ### Intro
 
 JuGEx  (Julich-Brain Gene Expression) is an integrated framework developed to combined the AllenBrain and Julich-Brain atlases for statistical analysis of differential gene expression in the adult human brain.
-The framework has been developed by S. Bludau et al. and is described in *Sebastian Bludau, Thomas W. Mühleisen, Simon B. Eickhoff, Michael J. Hawrylycz, Sven Cichon, Katrin Amunts. Integration of transcriptomic and cytoarchitectonic data implicates a role for MAOA and TAC1 in the limbic-cortical network. 2018, Brain Structure and Function. [https://doi.org/10.1007/s00429-018-1620-6](https://doi.org/10.1007/s00429-018-1620-6)*.
+The framework has been developed by S. Bludau et al. and is described in 
+
+> Sebastian Bludau, Thomas W. Mühleisen, Simon B. Eickhoff, Michael J. Hawrylycz, Sven Cichon, Katrin Amunts. Integration of transcriptomic and cytoarchitectonic data implicates a role for MAOA and TAC1 in the limbic-cortical network. 2018, Brain Structure and Function. [https://doi.org/10.1007/s00429-018-1620-6](https://doi.org/10.1007/s00429-018-1620-6)*.
 
 The original implementation in Matlab can be found [here](https://www.fz-juelich.de/SharedDocs/Downloads/INM/INM-1/DE/jugex.html?nn=2163780).
 
