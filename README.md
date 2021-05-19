@@ -1,6 +1,6 @@
 # siibra-jugex
 
-### A toolbox for atlas-based differential analysis of gene expressions
+## A toolbox for atlas-based differential analysis of gene expressions
 
 *Authors: Big Data Analytics Group and S. Bludau, Institute of Neuroscience and Medicine (INM-1), Forschungszentrum Jülich GmbH*
 
@@ -23,16 +23,14 @@ The analysis is initialized with a siibra atlas object. It will check if the par
 
 For the gene expression data, `siibra-jugex` accesses the Allen Brain Atlas API (© 2015 Allen Institute for Brain Science. Allen Brain Atlas API. Available from: brain-map.org/api/index.html).
 
-### Getting started
+## Installation
 
-To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository. 
+`siibra-python` is available on pypi. To install the latest version, simply run `pip install siibra-jugex`.
 
-### Installation
+## Quick walkthrough
 
-`siibra-python` is available on pypi.
-To install the latest version, simply run `pip install siibra-jugex`.
+To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository, which walks you throught the basic idea:
 
-### Quick walkthrough
 
 #### Initialize the analysis
 
@@ -45,11 +43,7 @@ import siibra, siibra_jugex
 
     [siibra:INFO]  Version: 0.1a1
     [siibra:INFO]  Configuration: siibra-0.1a1
-    [siibra:INFO]  Multilevel Human Atlas | select "Julich-Brain Cytoarchitectonic Maps 2.5"
-    [siibra:INFO]  Allen Mouse Common Coordinate Framework v3 | select "Allen Mouse Common Coordinate Framework v3 2015"
-    [siibra:INFO]  Waxholm Space atlas of the Sprague Dawley rat brain | select "Waxholm Space rat brain atlas v3"
     [siibra_jugex:INFO]  Version: 0.1a1
-
 
 
 ```python
@@ -106,9 +100,6 @@ result = jugex.run(permutations=1000)
 print(result['p-values'])
 ```
 
-    [siibra_jugex:INFO]  Running 1000 random permutations. This may take a while...
-
-
     {'MAOA': 0.96, 'TAC1': 0.441}
 
 
@@ -143,10 +134,6 @@ for regionname in candidate_regions:
     display = plotting.plot_roi(pmap,cmap="jet",title=region.name)
     display.add_markers([s['mnicoord'] for s in samples.values()])
 ```
-
-    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc1 (V1, 17, CalcS) - right hemisphere"
-    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc2 (V2, 18) - right hemisphere"
-
 
 
     
