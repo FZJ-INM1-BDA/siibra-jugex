@@ -1,10 +1,14 @@
-# siibra-jugex - Siibra toolbox for atlas-based differential analysis of gene expressions
+# siibra-jugex
+
+## Siibra toolbox for atlas-based differential analysis of gene expressions
 
 *Authors: Big Data Analytics Group and S. Bludau, Institute of Neuroscience and Medicine (INM-1), Forschungszentrum Jülich GmbH*
 
 Copyright 2020-2021, Forschungszentrum Jülich GmbH 
 
 > :warning: **`siibra-jugex` is at an experimental stage.** The software is not yet fully tested. Be aware that you will likely encounter bugs.
+
+### Intro
 
 JuGEx  (Julich-Brain Gene Expression) is an integrated framework develoepd to combined the AllenBrain and Julich-Brain atlases for statistical analysis of differential gene expression in the adult human brain.
 The framework has been developed by S. Bludau et al. and is described in the following publication:
@@ -21,9 +25,11 @@ The analysis is initialized with a siibra atlas object. It will check if the par
 
 For the gene expression data, `siibra-jugex` accesses the Allen Brain Atlas API (© 2015 Allen Institute for Brain Science. Allen Brain Atlas API. Available from: brain-map.org/api/index.html).
 
+### Getting started
+
 To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository. 
 
-## Installation and setup
+### Installation
 
 `siibra-python` is available on pypi.
 To install the latest version, simply run `pip install siibra-jugex`.
