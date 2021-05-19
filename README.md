@@ -41,9 +41,9 @@ The analysis is initialized with a `siibra` atlas object. It will check if the p
 import siibra, siibra_jugex
 ```
 
-    [siibra:INFO]  Version: 0.1a1
-    [siibra:INFO]  Configuration: siibra-0.1a1
-    [siibra_jugex:INFO]  Version: 0.1a1
+>    [siibra:INFO]  Version: 0.1a1 \
+     [siibra:INFO]  Configuration: siibra-0.1a1 \
+     [siibra_jugex:INFO]  Version: 0.1a1
 
 
 ```python
@@ -54,7 +54,7 @@ atlas.threshold_continuous_maps(0.2)
 jugex = siibra_jugex.DifferentialGeneExpression(atlas)
 ```
 
-    [siibra:INFO]  Multilevel Human Atlas | select "Julich-Brain Cytoarchitectonic Maps 2.5"
+>    [siibra:INFO]  Multilevel Human Atlas | select "Julich-Brain Cytoarchitectonic Maps 2.5"
 
 
 #### Configure the experiment with brain regions and candidate genes
@@ -71,7 +71,7 @@ jugex.define_roi1(candidate_regions[0])
 jugex.define_roi2(candidate_regions[1])
 ```
 
-    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc1 (V1, 17, CalcS) - right hemisphere"
+>    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc1 (V1, 17, CalcS) - right hemisphere" \
     [siibra:INFO]  Retrieving probe ids for gene MAOA
 
 
@@ -82,13 +82,13 @@ jugex.define_roi2(candidate_regions[1])
     https://alleninstitute.org/legal/terms-use/.
 
 
-    [siibra:INFO]  Area hOc1 (V1, 17, CalcS) - right hemisphere: Computing mask by thresholding continuous map at 0.2.
-    [siibra:INFO]  Retrieving probe ids for gene TAC1
-    [siibra_jugex:INFO]  12 samples found for region v1 right.
-    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc2 (V2, 18) - right hemisphere"
-    [siibra:INFO]  Retrieving probe ids for gene MAOA
-    [siibra:INFO]  Area hOc2 (V2, 18) - right hemisphere: Computing mask by thresholding continuous map at 0.2.
-    [siibra:INFO]  Retrieving probe ids for gene TAC1
+>    [siibra:INFO]  Area hOc1 (V1, 17, CalcS) - right hemisphere: Computing mask by thresholding continuous map at 0.2. \
+    [siibra:INFO]  Retrieving probe ids for gene TAC1 \
+    [siibra_jugex:INFO]  12 samples found for region v1 right. \
+    [siibra:INFO]  Multilevel Human Atlas | select "Area hOc2 (V2, 18) - right hemisphere" \
+    [siibra:INFO]  Retrieving probe ids for gene MAOA \
+    [siibra:INFO]  Area hOc2 (V2, 18) - right hemisphere: Computing mask by thresholding continuous map at 0.2. \
+    [siibra:INFO]  Retrieving probe ids for gene TAC1 \
     [siibra_jugex:INFO]  11 samples found for region v2 right.
 
 
@@ -100,7 +100,7 @@ result = jugex.run(permutations=1000)
 print(result['p-values'])
 ```
 
-    {'MAOA': 0.96, 'TAC1': 0.441}
+>    {'MAOA': 0.96, 'TAC1': 0.441}
 
 
 The aggregated input parameters can be stored to disk.
@@ -112,7 +112,7 @@ jugex.save('jugex_{}_{}.json'.format(
     "_".join(candidate_genes) ))
 ```
 
-    [siibra_jugex:INFO]  Exported p-values and factors to file jugex_v1 right_v2 right_MAOA_TAC1.json.
+>    [siibra_jugex:INFO]  Exported p-values and factors to file jugex_v1 right_v2 right_MAOA_TAC1.json.
 
 
 #### Look at filtered positions of microarray samples in MNI space
@@ -135,11 +135,9 @@ for regionname in candidate_regions:
     display.add_markers([s['mnicoord'] for s in samples.values()])
 ```
 
-
     
 ![png](images/example_12_1.png)
     
-
 
 
     
