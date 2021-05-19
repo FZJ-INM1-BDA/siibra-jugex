@@ -18,14 +18,12 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 import numpy as np
 from concurrent import futures
-from brainscapes.atlas import Atlas
-from brainscapes import spaces,logger
-from brainscapes.features import gene_names, modalities
+from siibra.atlas import Atlas
+from siibra import spaces,logger
+from siibra.features import gene_names, modalities
 from collections import defaultdict
 
-# Remove these imports after development
-import pprint
-import sys
+MNI152SPACE = spaces.MNI152_2009C_NONL_ASYM
 
 class DifferentialGeneExpression:
     """
@@ -43,7 +41,6 @@ class DifferentialGeneExpression:
     https://www.fz-juelich.de/inm/inm-1/DE/Forschung/_docs/JuGex/JuGex_node.html
     """
 
-    icbm_id = spaces.MNI_152_ICBM_2009C_NONLINEAR_ASYMMETRIC.id
 
     def __init__(self,atlas: Atlas, gene_names=[]):
         self._pvals = None
@@ -53,10 +50,8 @@ class DifferentialGeneExpression:
         self._samples1 = defaultdict(dict)
         self._samples2 = defaultdict(dict)
         self.genes = set(gene_names)
-        spaces_supported = atlas.selected_parcellation.maps.keys()
-        if self.icbm_id not in spaces_supported:
-            raise Exception("Atlas provided to DifferentialGeneExpression analysis does not support the {} space in its selected parcellation {}.".format(
-                self.icbm_id, atlas.selected_parcellation))
+        if not atlas.selected_parcellation.supports_space(MNI152SPACE):
+            raise Exception(f"{MNI152SPACE.name} space not supported by selected parcellation {atlas.selected_parcellation}.")
         self.atlas = atlas
 
     @staticmethod
@@ -278,7 +273,7 @@ class DifferentialGeneExpression:
             return None
         samples = defaultdict(dict)
         for gene_name in self.genes:
-            for f in self.atlas.query_data(
+            for f in self.atlas.get_features(
                     modalities.GeneExpression,
                     gene=gene_name):
                 key = tuple(list(f.location)+[regiondef])
@@ -292,7 +287,8 @@ class DifferentialGeneExpression:
         return samples
 
 
-    def _filter_samples(self, samples):
+    @staticmethod
+    def _filter_samples(samples):
         """
         Filter out duplicate samples from the samples dictionary.
 

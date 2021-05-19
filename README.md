@@ -18,10 +18,11 @@ The original implementation in Matlab can be found [here](https://www.fz-juelich
 
 The basic idea of JuGExis to supplement different levels of information on brain architecture, e.g. structural and functional connectivity, brain activations, and neurotransmitter receptor density by transcriptional information to enlight biological aspects of brain organization and its diseases, spatially referring to the cytoarchitectonic Julich-Brain atlas. This allows analysis beyond approaches which rely on the traditional segregation of the brain into sulci and gyri, thereby combining functionally different microstructural areas. JuGex is publicly available to empower research from basic, cognitive and clinical neuroscience in further brain regions and disease models with regard to gene expression.
 
-
 `siibra` is a Python client for interacting with "multilevel" brain atlases, which combine multiple brain parcellations, reference coordinate spaces and modalities. See [here](https://siibra.eu) for more details.
-The present toolbox implements the JuGEx algorithm with siibra, to provide a simple and intuitive implementation in python, as well as an interactive plugin of the 3D atlas viewer of [EBRAINS](https://ebrains.eu/service/human-brain-atlas/).
+This siibra toolbox implements the JuGEx algorithm with siibra, to provide a simple and intuitive implementation in python, as well as an interactive plugin of the 3D atlas viewer of [EBRAINS](https://ebrains.eu/service/human-brain-atlas/).
+The analysis is initialized with a siibra atlas object. It will check if the parcellation selected in the atlas is suitable for performing the analysis, which includes to verify that the given atlas object provides maps in the MNI ICBM 152 space. The analysis is configured by specifying some candidate genes of interest, and two regions of interest (ROI) specified by brain area names that the atlas object can resolve. Note that the siibra atlas class does fuzzy string matching to resolve region names, so you can try with a simple name of the regions to see if siibra interprets them.  Also, gene names can easily be looked up and autocompleted in siibra.gene_names.
 
+For the gene expression data, `siibra-jugex` accesses the Allen Brain Atlas API (© 2015 Allen Institute for Brain Science. Allen Brain Atlas API. Available from: brain-map.org/api/index.html).
 
 To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository. 
 
