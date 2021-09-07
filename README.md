@@ -29,7 +29,7 @@ For the gene expression data, `siibra-jugex` accesses the Allen Brain Atlas API 
 
 ## Quick walkthrough
 
-To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository, which walks you throught the basic idea:
+To get familiar with `siibra-jugex`, we recommend to checkout the notebook in the `examples/` subfolder of this repository, which walks you throught the basic idea. You can run it live if you like by visiting mybinder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/FZJ-INM1-BDA/siibra-jugex/master?filepath=examples%2Fsiibra-jugex.ipynb)
 
 
 #### Initialize the analysis
