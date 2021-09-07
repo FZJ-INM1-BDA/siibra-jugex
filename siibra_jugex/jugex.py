@@ -15,10 +15,15 @@
 
 from . import logger
 
-from siibra import spaces
-MNI152SPACE = spaces.MNI152_2009C_NONL_ASYM
-from siibra.atlas import Atlas
-from siibra.features import gene_names, modalities
+import siibra
+MNI152SPACE = siibra.spaces.MNI152_2009C_NONL_ASYM
+
+MIN_SIIBRA_VERSION=0.2
+import re
+siibra_version = float(re.sub('[^0-9.].*$','',siibra.__version__))
+if siibra_version < MIN_SIIBRA_VERSION:
+    raise RuntimeError("This version of siibra jugex expects siibra-python "
+            f"version {MIN_SIIBRA_VERSION} or higher.")
 
 from scipy.stats.mstats import winsorize
 from statsmodels.formula.api import ols
@@ -45,15 +50,15 @@ class DifferentialGeneExpression:
     """
 
 
-    def __init__(self,atlas: Atlas, gene_names=[]):
+    def __init__(self, parcellation, gene_names=[]):
         self._pvals = None
         self._index_by_regionspec = {}
         self._regionspecs = [None,None]
         self._sampledicts = [defaultdict(dict) for _ in range(2)]
         self.genes = set(gene_names)
-        if not atlas.selected_parcellation.supports_space(MNI152SPACE):
-            raise Exception(f"{MNI152SPACE.name} space not supported by selected parcellation {atlas.selected_parcellation}.")
-        self.atlas = atlas
+        if not parcellation.supports_space(MNI152SPACE):
+            raise Exception(f"{MNI152SPACE.name} space not supported by selected parcellation {parcellation}.")
+        self.parcellation = parcellation
 
     @staticmethod
     def _anova_iteration(area,zscores,donor_factors):
@@ -153,7 +158,7 @@ class DifferentialGeneExpression:
 
         gene_name : str or list
             Name of a gene, as defined in the Allen API. See
-            brainscapes.features.gene_names for a full list.
+            siibra.gene_names for a full list.
             It is also possible to provide a list of gene names instead of
             repeated calls to this function.
 
@@ -170,7 +175,7 @@ class DifferentialGeneExpression:
                 for g in gene_name ])
 
         assert(isinstance(gene_name,str))
-        if gene_name not in gene_names:
+        if gene_name not in siibra.gene_names:
             logger.warn("'{}' not found in the list of valid gene names.")
             return False
         self.genes.add(gene_name)
@@ -260,15 +265,13 @@ class DifferentialGeneExpression:
         Returns: dictionary
             Gene expression data samples for the provided region
         """
-        region = self.atlas.select_region(regionspec)
+        region = self.parcellation.decode_region(regionspec)
         if region is None:
             logger.warn("Region definition '{}' could not be matched in atlas.".format(regionspec))
             return None
         samples = defaultdict(dict)
         for gene_name in self.genes:
-            for f in self.atlas.get_features(
-                    modalities.GeneExpression,
-                    gene=gene_name):
+            for f in siibra.get_features( region, "gene", gene=gene_name):
                 key = tuple(list(f.location)+[regionspec])
                 samples[key] = {**samples[key], **f.donor_info}
                 samples[key]['mnicoord'] = tuple(f.location)
