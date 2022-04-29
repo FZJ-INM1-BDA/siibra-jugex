@@ -1,5 +1,5 @@
 from routes.analysis import router as analysis_router
-from . import access_logger
+from jugex_logger import access_logger
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
