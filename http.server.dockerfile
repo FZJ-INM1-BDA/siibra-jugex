@@ -3,6 +3,7 @@ FROM node:16-alpine as builder
 
 COPY ./siibra_jugex_viewerplugin /siibra_jugex_viewerplugin
 WORKDIR /siibra_jugex_viewerplugin
+RUN mkdir -p public/build
 RUN npm i
 RUN npm run build
 
