@@ -8,3 +8,4 @@ dist
 examples/*.json
 upload_to_pypi.sh
 venv
+.vscode
