@@ -16,6 +16,7 @@ WORKDIR /siibra_jugex_http
 
 RUN pip install -r ./requirements-server.txt
 COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex_http/public
+ENV SIIBRA_JUGEX_STATIC_DIR=/siibra_jugex_http/public
 
 USER nobody
 EXPOSE 6001
