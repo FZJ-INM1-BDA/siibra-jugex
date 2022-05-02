@@ -74,7 +74,7 @@ def get_analysis_with_id(analysis_id: str):
         res.forget()
         return ResultModel(
             status=ResultStatus.SUCCESS,
-            result=JugexAnalysisResult(**result)
+            result=JugexResult(**result)
         )
     return ResultModel(
         status=ResultStatus.PENDING
