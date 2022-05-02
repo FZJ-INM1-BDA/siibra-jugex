@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
@@ -36,9 +36,20 @@ class JugexAnalysisResult(BModel):
     zscores: Dict[str, List[float]]
     p_values: Dict[str, float] = Field(..., alias="p-values")
 
+
+class JugexMNICoord(BModel):
+    roi: str
+    mnicoord: List[Tuple[float, float, float]]
+
+
+class JugexResult(BModel):
+    result: JugexAnalysisResult
+    mnicoords: List[JugexMNICoord]
+
+
 class ResultModel(BModel):
     status: ResultStatus
-    result: Optional[JugexAnalysisResult]
+    result: Optional[JugexResult]
 
 
 @router.post('/analysis', response_model=PostRespModel)

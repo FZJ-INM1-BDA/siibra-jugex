@@ -35,9 +35,18 @@ def analysis(parcellation_id: str, roi_1:str, roi_2: str, genes: List[str], perm
         jugex.define_roi2(roi_2)
         
         result = jugex.run(permutations)
+        
+        mnicoords = [{
+            "roi": roi,
+            "mnicoord": [s["mnicoord"] for s in jugex.get_samples(roi).values()]
+        } for roi in [roi_1, roi_2]]
+
         logger.info(f"{hostname}:task:success")
         logger.debug(f"{hostname}:task:success_result {result}")
-        return result
+        return {
+            "result": result,
+            "mnicoords": mnicoords
+        }
     except Exception as e:
         logger.critical(f"{hostname}:task:failed {str(e)}")
         raise e
