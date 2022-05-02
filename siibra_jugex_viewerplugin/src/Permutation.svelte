@@ -4,7 +4,7 @@
   <div class="slider">
     <Slider
       bind:value={permutations}
-      min={1000}
+      min={100}
       max={10000}
       step={1}
       on:SMUISlider:change={update}
@@ -34,6 +34,7 @@
   .container
   {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
   }
 
