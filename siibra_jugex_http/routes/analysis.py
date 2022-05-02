@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from scheduling.worker import analysis, app
+from scheduling.worker import analysis
 
 class BModel(BaseModel):
     class Config:
@@ -39,7 +39,7 @@ class JugexAnalysisResult(BModel):
 
 class JugexMNICoord(BModel):
     roi: str
-    mnicoord: List[Tuple[float, float, float]]
+    mnicoord: List[List[float]]
 
 
 class JugexResult(BModel):
