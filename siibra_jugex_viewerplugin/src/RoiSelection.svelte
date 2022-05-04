@@ -39,7 +39,6 @@
 </style>
 
 <script>
-  export let regions = [];
   export let label = "Select ROI"
   export let postMessage = async (...arg) => { throw new Error(`expecting parent component overwrite postMessage function`) }
   export let selectedRegionName = undefined
@@ -92,23 +91,11 @@
     if (input === '' || !input) {
       return []
     }
-    if (!hasDataSrcFlag) {
-      searchId += 1
-      const thisSearchId = searchId
-      const returnArr = await searchRegion(input)
-      if (thisSearchId !== searchId) return []
-      currentAutocompleteList = returnArr.map(r => r.name)
-      return currentAutocompleteList
-    }
-    let regex
-    try {
-      regex = new RegExp(input, 'i')
-    } catch (e) {
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-      // CC0 or MIT
-      regex = new RegExp(input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    }
-    currentAutocompleteList = regions.map(r => r.name).filter(regionName => regex.test(regionName))
+    searchId += 1
+    const thisSearchId = searchId
+    const returnArr = await searchRegion(input)
+    if (thisSearchId !== searchId) return []
+    currentAutocompleteList = returnArr.map(r => r.name)
     return currentAutocompleteList
   }
 

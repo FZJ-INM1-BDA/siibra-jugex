@@ -1,16 +1,15 @@
 <svelte:window on:message={handleMessage}/>
 
+{#if !destroyFlag}
 <Card>
 	<Content>
 		<h3>ROI Selection</h3>
 		<RoiSelection
 			on:RoiSelected={ev => handleUpdateParam({ roi_1: ev.detail })}
-			regions={regions}
 			label="Select ROI 1"
 			postMessage={postMessage}/>
 		<RoiSelection
-		on:RoiSelected={ev => handleUpdateParam({ roi_2: ev.detail })}
-			regions={regions}
+			on:RoiSelected={ev => handleUpdateParam({ roi_2: ev.detail })}
 			label="Select ROI 2"
 			postMessage={postMessage}/>
 	</Content>	
@@ -55,11 +54,18 @@
 			</Label>
 		</Button>
 		{/if}
+
+		{#if result && hasDataSrcFlag}
+		<ShowResult {postMessage} {result} />
+		{/if}
+
 		{#if errorText}
 		{errorText}
 		{/if}
 	</Content>
 </Card>
+{/if}
+
 <script>
 	import RoiSelection from "./RoiSelection.svelte"
 	import GeneSelection from "./GeneSelection.svelte"
@@ -68,21 +74,31 @@
 	import Card, { Content } from "@smui/card"
 	import Button, { Label, Icon } from "@smui/button"
 	import CircularProgress from "@smui/circular-progress"
+	import ShowResult from "./ShowResult.svelte"
+  import { onDestroy, tick } from "svelte"
+  
 
 	const getUuid = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
 
-	let regions = []
+  let destroyFlag = false
+  let destroyCbObj = []
+
+	let hasDataSrcFlag = false
 	let src = undefined
 	let runningFlag = false
 	let srcOrigin = undefined
 	let errorText = undefined
 	let downloadUrl = undefined
 	let genes = []
+	let result = undefined
 
 	let param = {
 		parcellation_id: parcellationId,
 		permutations: 1000
 	}
+
+	hasDataSrc.subscribe(flag => hasDataSrcFlag = flag)
+
 	function handleUpdateParam(newParam){
 		param = {
 			...param,
@@ -128,23 +144,39 @@
 				srcOrigin = origin
 				break
 			}
-			case 'sxplr.on.allRegions': {
-				regions = params.filter(r => r.hasAnnotation && r.hasAnnotation.internalIdentifier)
-			}
 			break
 		}
 	}
 
+  onDestroy(async () => {
+    destroyFlag = true
+    await tick()
+		src.postMessage({
+			method: `sxplr.exit`,
+      params: {
+        requests: destroyCbObj
+      },
+			jsonrpc: '2.0',
+      id: getUuid()
+		}, srcOrigin)
+  })
+
 	async function postMessage(_msg) {
+    if (destroyFlag) {
+      destroyCbObj = [...destroyCbObj, {..._msg, id: getUuid() }]
+      return
+    }
 		const id = getUuid()
 		const { abortSignal, ...msg } = _msg
-		abortSignal.onAbort(() => {
-			src.postMessage({
-				method: `sxplr.cancelRequest`,
-				jsonrpc: '2.0',
-				params: { id },
-			}, srcOrigin)
-		})
+		if (abortSignal) {
+			abortSignal.onAbort(() => {
+				src.postMessage({
+					method: `sxplr.cancelRequest`,
+					jsonrpc: '2.0',
+					params: { id },
+				}, srcOrigin)
+			})
+		}
 		src.postMessage({
 			...msg,
 			id,
@@ -161,6 +193,7 @@
 			return
 		}
 		runningFlag = true
+		result = null
 		errorText = null
 		if (downloadUrl) {
 			URL.revokeObjectURL(downloadUrl)
@@ -180,7 +213,7 @@
 			}
 			const { poll_url } = await res.json()
 
-			const result = await new Promise((rs, rj) => {
+			result = await new Promise((rs, rj) => {
 				const intervalRef = setInterval(async () => {
 					const res = await fetch(`${SIIBRA_JUGEX_ENDPOINT}/analysis/analysis/${poll_url}`)
 					if (res.status >= 400) {

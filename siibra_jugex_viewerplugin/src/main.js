@@ -7,4 +7,8 @@ const app = new App({
 	}
 });
 
+window.addEventListener('pagehide', () => {
+	app.$destroy()
+})
+
 export default app;
