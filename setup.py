@@ -35,6 +35,6 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>=3.6',
-    install_requires=['siibra>=0.2a0','statsmodels','scipy']
+    install_requires=['siibra>=0.3a17','statsmodels','scipy']
 )
 
