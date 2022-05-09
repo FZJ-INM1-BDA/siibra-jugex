@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import List
 from . import logger
 
 import siibra
@@ -50,7 +51,7 @@ class DifferentialGeneExpression:
     """
 
 
-    def __init__(self, parcellation, gene_names=[]):
+    def __init__(self, parcellation:siibra.core.Parcellation, gene_names:List[str]=[]):
         self._pvals = None
         self._index_by_regionspec = {}
         self._regionspecs = [None,None]
@@ -181,7 +182,7 @@ class DifferentialGeneExpression:
         self.genes.add(gene_name)
         return True
 
-    def _define_roi(self,regionspec,roi_index):
+    def _define_roi(self,regionspec,roi_index,maptype:siibra.MapType=siibra.MapType.CONTINUOUS,threshold:float=0.2):
         """
         (Re-)Defines a region of interest.
 
@@ -193,9 +194,14 @@ class DifferentialGeneExpression:
             selected atlas parcellation
         roi_index : 0 or 1
             index of the roi to be updated
+        maptype : siibra.MapType
+            Specifies which maptype (continuous or labelled)
+        threshold : float
+            Specifies the threshold to be used when continuous map is used.
+            Ignored if labelled map is used.
         """
         if type(regionspec) == str:
-            new_samples = self._retrieve_samples(regionspec)
+            new_samples = self._retrieve_samples(regionspec,maptype=maptype,threshold=threshold)
             if new_samples is None:
                 raise Exception("Could not define ROI.")
             if self._regionspecs[roi_index] is not None:
@@ -209,9 +215,9 @@ class DifferentialGeneExpression:
             for region in regionspec:
                 logger.info(region)
                 if new_samples is None:
-                    new_samples = self._retrieve_samples(region)
+                    new_samples = self._retrieve_samples(region,maptype=maptype,threshold=threshold)
                 else:
-                    new_samples.update(self._retrieve_samples(region))
+                    new_samples.update(self._retrieve_samples(region,maptype=maptype,threshold=threshold))
             if new_samples is None:
                 raise Exception("Could not define ROI.")
             if self._regionspecs[roi_index] is not None:
@@ -224,7 +230,7 @@ class DifferentialGeneExpression:
             logger.warning("Unsupported parameter in ROI")
 
 
-    def define_roi1(self,regionspec):
+    def define_roi1(self,regionspec,maptype:siibra.MapType=siibra.MapType.CONTINUOUS,threshold:float=0.2):
         """
         (Re-)Defines the first region of interest.
 
@@ -234,11 +240,16 @@ class DifferentialGeneExpression:
         regionspec : str or list
             Identifier or list of identifiers for a brain region in the
             selected atlas parcellation
+        maptype : siibra.MapType
+            Specifies which maptype (continuous or labelled)
+        threshold : float
+            Specifies the threshold to be used when continuous map is used.
+            Ignored if labelled map is used.
         """
-        self._define_roi(regionspec,0)
+        self._define_roi(regionspec,0,maptype,threshold)
 
 
-    def define_roi2(self,regionspec):
+    def define_roi2(self,regionspec,maptype:siibra.MapType=siibra.MapType.CONTINUOUS,threshold:float=0.2):
         """
         (Re-)defines the second region of interest.
 
@@ -248,10 +259,15 @@ class DifferentialGeneExpression:
         regionspec : str or list
             Identifier or list of identifiers for a brain region in the
             selected atlas parcellation
+        maptype : siibra.MapType
+            Specifies which maptype (continuous or labelled)
+        threshold : float
+            Specifies the threshold to be used when continuous map is used.
+            Ignored if labelled map is used.
         """
-        self._define_roi(regionspec,1)
+        self._define_roi(regionspec,1,maptype,threshold)
 
-    def _retrieve_samples(self,regionspec):
+    def _retrieve_samples(self,regionspec,maptype:siibra.MapType,threshold:float):
         """
         Retrieves and prepares gene expression samples for the given region
         definition.
@@ -265,13 +281,17 @@ class DifferentialGeneExpression:
         Returns: dictionary
             Gene expression data samples for the provided region
         """
+        if maptype is None:
+            raise Exception(f"maptype must be provided for _retrieve_samples")
+        if maptype is siibra.MapType.CONTINUOUS and threshold is None:
+            raise Exception(f"for continuous map, threshold must be provided!")
         region = self.parcellation.decode_region(regionspec)
         if region is None:
             logger.warn("Region definition '{}' could not be matched in atlas.".format(regionspec))
             return None
         samples = defaultdict(dict)
         for gene_name in self.genes:
-            for f in siibra.get_features( region, "gene", gene=gene_name):
+            for f in siibra.get_features(region, "gene", gene=gene_name, maptype=maptype, threshold_continuous=threshold):
                 key = tuple(list(f.location)+[regionspec])
                 samples[key] = {**samples[key], **f.donor_info}
                 samples[key]['mnicoord'] = tuple(f.location)
