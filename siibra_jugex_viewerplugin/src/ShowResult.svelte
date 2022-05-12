@@ -22,13 +22,13 @@ function handleSwitchEvent(event) {
   if (!result) throw new Error(`result is not defined`)
   const flag = event.detail.selected
   if (flag) {
-    addedAnnotations = result.mnicoords.map(({ mnicoord, roi }) => {
+    addedAnnotations = result.mnicoords.map(({ mnicoord, roi }, index) => {
       return mnicoord.map((coord, idx) => {
         return {
           '@id': `siibra-jugex-${roi}-${idx}`,
           name: `${roi}: ${idx}`,
           description: `${roi}: ${idx}: ${JSON.stringify(coord)}`,
-          color: '#ffffff',
+          color: index % 2 === 0 ? 'WHITE' : 'RED',
           openminds: {
             coordinateSpace: {
               "@id": MNI152ID
