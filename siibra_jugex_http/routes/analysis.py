@@ -18,6 +18,7 @@ class PostReqModel(BModel):
     roi_2: str
     genes: List[str]
     permutations: int = Field(1000)
+    threshold: float = Field(0.2)
 
 class PostRespModel(BModel):
     poll_url: str

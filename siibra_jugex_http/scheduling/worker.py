@@ -17,7 +17,7 @@ app = Celery(CHANNEL)
 app.config_from_object(default_config)
 
 @app.task
-def analysis(parcellation_id: str, roi_1:str, roi_2: str, genes: List[str], permutations: int):
+def analysis(parcellation_id: str, roi_1:str, roi_2: str, genes: List[str], permutations: int, threshold: float):
     from siibra_jugex import DifferentialGeneExpression
     import siibra
     import socket
@@ -31,8 +31,8 @@ def analysis(parcellation_id: str, roi_1:str, roi_2: str, genes: List[str], perm
 
         jugex = DifferentialGeneExpression(parc)
         jugex.add_candidate_genes(genes)
-        jugex.define_roi1(roi_1)
-        jugex.define_roi2(roi_2)
+        jugex.define_roi1(roi_1, maptype=siibra.MapType.CONTINUOUS, threshold=threshold)
+        jugex.define_roi2(roi_2, maptype=siibra.MapType.CONTINUOUS, threshold=threshold)
         
         result = jugex.run(permutations)
         

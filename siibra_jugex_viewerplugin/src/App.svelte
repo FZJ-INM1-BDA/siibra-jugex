@@ -29,7 +29,7 @@
 <Card>
 	<Content>
 		<h3>Permutations</h3>
-		<Permutation on:PermutationUpdated={ev => handleUpdateParam({ permutations: ev.detail })} />
+		<JugexSlider min={100} max={10000} step={1} value={100} on:ValueUpdated={ev => handleUpdateParam({ permutations: ev.detail })} />
 	</Content>
 </Card>
 
@@ -37,7 +37,16 @@
 
 <Card>
 	<Content>
-		<Button on:click={runAnalysis} disabled={runningFlag}>
+		<h3>Threshold</h3>
+		<JugexSlider min={0} max={1} step={0.01} value={0.2} on:ValueUpdated={ev => handleUpdateParam({ threshold: ev.detail })} />
+	</Content>
+</Card>
+
+<div class="spacer"></div>
+
+<Card>
+	<Content>
+		<Button on:click={runAnalysis} disabled={!canRunFlag}>
 			<Label>
 				Run
 			</Label>
@@ -69,23 +78,24 @@
 <script>
 	import RoiSelection from "./RoiSelection.svelte"
 	import GeneSelection from "./GeneSelection.svelte"
-	import Permutation from "./Permutation.svelte"
+	import JugexSlider from "./JugexSlider.svelte"
 	import { hasDataSrc, getGeneNames, SIIBRA_JUGEX_ENDPOINT, parcellationId } from "./store.js"
 	import Card, { Content } from "@smui/card"
 	import Button, { Label, Icon } from "@smui/button"
 	import CircularProgress from "@smui/circular-progress"
 	import ShowResult from "./ShowResult.svelte"
-  import { onDestroy, tick } from "svelte"
+  	import { onDestroy, tick } from "svelte"
   
 
 	const getUuid = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
 
-  let destroyFlag = false
-  let destroyCbObj = []
+	let destroyFlag = false
+	let destroyCbObj = []
 
 	let hasDataSrcFlag = false
 	let src = undefined
 	let runningFlag = false
+	let canRunFlag = false
 	let srcOrigin = undefined
 	let errorText = undefined
 	let downloadUrl = undefined
@@ -94,8 +104,14 @@
 
 	let param = {
 		parcellation_id: parcellationId,
-		permutations: 1000
+		permutations: 1000,
+		threshold: 0.2,
+		roi_1: null,
+		roi_2: null,
+		genes: [],
 	}
+
+	$: canRunFlag = !runningFlag && !!param.roi_1 && !!param.roi_2 && param.genes.length > 0
 
 	hasDataSrc.subscribe(flag => hasDataSrcFlag = flag)
 

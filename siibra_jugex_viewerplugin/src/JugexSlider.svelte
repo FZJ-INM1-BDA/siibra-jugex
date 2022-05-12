@@ -3,17 +3,17 @@
 <div class="container">
   <div class="slider">
     <Slider
-      bind:value={permutations}
-      min={100}
-      max={10000}
-      step={1}
+      bind:value={value}
+      {min}
+      {max}
+      {step}
       on:SMUISlider:change={update}
       />
   </div>
   <div class="input">
     <Textfield
       class="input"
-      bind:value={permutations}
+      bind:value={value}
       type="number"/>
   </div>
 </div>
@@ -23,10 +23,13 @@
   import Slider from "@smui/slider"
   import Textfield from '@smui/textfield';
   import { createEventDispatcher } from "svelte"
-  let permutations = 1000
+  export let min = 0;
+  export let max = 1;
+  export let step = 0.01;
+  export let value = 0;
   const dispatcher = createEventDispatcher()
   function update(){
-    dispatcher("PermutationUpdated", permutations)
+    dispatcher("ValueUpdated", value)
   }
 </script>
 
