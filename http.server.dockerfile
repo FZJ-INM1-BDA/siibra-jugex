@@ -11,15 +11,15 @@ RUN npm run build
 FROM python:3.10-alpine
 RUN pip install -U pip
 
-RUN mkdir /siibra_jugex_http
-COPY ./siibra_jugex_http/requirements-server.txt /siibra_jugex_http/requirements-server.txt
-RUN pip install -r /siibra_jugex_http/requirements-server.txt
+RUN mkdir -p /siibra_jugex/siibra_jugex_http
+COPY ./siibra_jugex_http/requirements-server.txt /siibra_jugex/siibra_jugex_http/requirements-server.txt
+RUN pip install -r /siibra_jugex/siibra_jugex_http/requirements-server.txt
 
-COPY ./siibra_jugex_http /siibra_jugex_http/siibra_jugex_http
-WORKDIR /siibra_jugex_http
+COPY ./siibra_jugex_http /siibra_jugex/
+WORKDIR /siibra_jugex/
 
-COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex_http/public
-ENV SIIBRA_JUGEX_STATIC_DIR=/siibra_jugex_http/public
+COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex/siibra_jugex_http/public
+ENV SIIBRA_JUGEX_STATIC_DIR=/siibra_jugex/siibra_jugex_http/public
 
 USER nobody
 EXPOSE 6001
