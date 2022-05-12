@@ -12,7 +12,7 @@ except ImportError as e:
     logger.critical(f"Importing celery error")
     raise e
 
-default_config="conf.celeryconfig"
+default_config="siibra_jugex_http.conf.celeryconfig"
 app = Celery(CHANNEL)
 app.config_from_object(default_config)
 
