@@ -11,15 +11,16 @@ RUN npm run build
 FROM python:3.10-alpine
 RUN pip install -U pip
 
-COPY ./siibra_jugex_http /siibra_jugex_http
+RUN mkdir /siibra_jugex_http
+COPY ./siibra_jugex_http/requirements-server.txt /siibra_jugex_http/requirements-server.txt
+RUN pip install -r /siibra_jugex_http/requirements-server.txt
+
+COPY ./siibra_jugex_http /siibra_jugex_http/siibra_jugex_http
 WORKDIR /siibra_jugex_http
 
-COPY ./examples /examples
-
-RUN pip install -r ./requirements-server.txt
 COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex_http/public
 ENV SIIBRA_JUGEX_STATIC_DIR=/siibra_jugex_http/public
 
 USER nobody
 EXPOSE 6001
-ENTRYPOINT uvicorn main:app --port 6001 --host 0.0.0.0
+ENTRYPOINT uvicorn siibra_jugex_http.main:app --port 6001 --host 0.0.0.0
