@@ -16,6 +16,7 @@ COPY ./siibra_jugex_http/requirements-server.txt /siibra_jugex/requirements-serv
 RUN pip install -r /siibra_jugex/requirements-server.txt
 
 COPY ./siibra_jugex_http /siibra_jugex/siibra_jugex_http
+COPY ./examples /siibra_jugex/examples
 WORKDIR /siibra_jugex/
 
 COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex/siibra_jugex_http/public

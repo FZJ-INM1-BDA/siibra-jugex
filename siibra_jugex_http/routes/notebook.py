@@ -9,16 +9,17 @@ from siibra_jugex_http.routes.common import PostReqModel, common_params, reverse
 
 html_exporter = HTMLExporter(template_name="classic")
 router = APIRouter()
-templates = Jinja2Templates(directory="templates/")
+
+root_dir=path.abspath(
+    path.join((
+        path.dirname(__file__),
+        "../.."
+    ))
+)
+templates = Jinja2Templates(directory=path.join(root_dir, "siibra_jugex_http/templates/"))
 
 def get_notebook(post_req:PostReqModel):
-    path_to_notebook = path.abspath(
-        path.join(
-            path.dirname(__file__),
-            "../..",
-            "examples/siibra-jugex.ipynb",
-        )
-    )
+    path_to_notebook = path.join(root_dir, "examples/siibra-jugex.ipynb")
     with open(path_to_notebook, "r") as fp:
         notebook = nbformat.read(fp, as_version=4)
 
