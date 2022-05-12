@@ -1,0 +1,32 @@
+name: '[unit test]'
+
+on: [ push ]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test_path: ['siibra_jugex', 'siibra_jugex_http']
+        include:
+        - test_path: siibra_jugex
+        - test_path: siibra_jugex_http
+          pip_install: '-r ./siibra_jugex_http/requirements-server.txt'
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.6'
+
+    - name: "Install testing libraries"
+      run: pip install pytest
+
+    - name: "Install dependencies defined in matrix.pip_install"
+      if: ${{ matrix.pip_install }}
+      run: pip install ${{ matrix.pip_install }}
+    
+    - name: "Run tests at test/${{ matrix.test_path }}"
+      run: pytest test/${{ matrix.test_path }}

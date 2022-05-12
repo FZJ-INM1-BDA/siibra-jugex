@@ -1,24 +1,12 @@
 from enum import Enum
 from typing import Dict, List, Optional
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from scheduling.worker import analysis
-
-class BModel(BaseModel):
-    class Config:
-        use_enum_values: True
-        allow_population_by_field_name = True
+from siibra_jugex_http.routes.common import PostReqModel, BModel
+from siibra_jugex_http.scheduling.worker import analysis
 
 router = APIRouter()
-
-class PostReqModel(BModel):
-    parcellation_id: str
-    roi_1: str
-    roi_2: str
-    genes: List[str]
-    permutations: int = Field(1000)
-    threshold: float = Field(0.2)
 
 class PostRespModel(BModel):
     poll_url: str

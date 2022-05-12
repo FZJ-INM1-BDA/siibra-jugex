@@ -1,5 +1,6 @@
-from routes.analysis import router as analysis_router
-from jugex_logger import access_logger
+from siibra_jugex_http.routes.analysis import router as analysis_router
+from siibra_jugex_http.routes.notebook import router as notebook_router
+from siibra_jugex_http.jugex_logger import access_logger
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -42,5 +43,6 @@ def hello():
     return 'world'
 
 app.include_router(analysis_router, prefix="/analysis")
+app.include_router(notebook_router, prefix="/notebook")
 app.mount('/viewer_plugin', StaticFiles(directory=path_to_static))
 

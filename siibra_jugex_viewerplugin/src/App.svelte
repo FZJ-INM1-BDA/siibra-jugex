@@ -29,7 +29,7 @@
 <Card>
 	<Content>
 		<h3>Permutations</h3>
-		<JugexSlider min={100} max={10000} step={1} value={100} on:ValueUpdated={ev => handleUpdateParam({ permutations: ev.detail })} />
+		<JugexSlider min={100} max={10000} step={1} value={defaultPerm} on:ValueUpdated={ev => handleUpdateParam({ permutations: ev.detail })} />
 	</Content>
 </Card>
 
@@ -38,7 +38,7 @@
 <Card>
 	<Content>
 		<h3>Threshold</h3>
-		<JugexSlider min={0} max={1} step={0.01} value={0.2} on:ValueUpdated={ev => handleUpdateParam({ threshold: ev.detail })} />
+		<JugexSlider min={0} max={1} step={0.01} value={defaultTreshold} on:ValueUpdated={ev => handleUpdateParam({ threshold: ev.detail })} />
 	</Content>
 </Card>
 
@@ -102,10 +102,13 @@
 	let genes = []
 	let result = undefined
 
+	const defaultPerm = 100
+	const defaultTreshold = 0.2
+
 	let param = {
 		parcellation_id: parcellationId,
-		permutations: 1000,
-		threshold: 0.2,
+		permutations: defaultPerm,
+		threshold: defaultTreshold,
 		roi_1: null,
 		roi_2: null,
 		genes: [],

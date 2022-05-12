@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+	<title>siibra-jugex workbook</title>
+    <style>
+    html, body, iframe
+    {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .disabled
+    {
+        pointer-events:none;
+    }
+    body
+    {
+        display: flex;
+        flex-direction: column;
+    }
+    body #notebook-container
+    {
+        flex: 0px 1 1;
+    }
+    </style>
+</head>
+
+<body>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4">
+        siibra-jugex
+      </h1>
+      <p class="lead">
+        lead
+      </p>
+
+      <hr class="my-4">
+      
+      <!-- button container -->
+      <div class="d-inline-flex w-100 align-items-center">
+        <div class="flex-grow-0 flex-shrink-0 btn-group"
+          role="group">
+
+          <!-- download to local -->
+          <a href="{{download_notebook_url}}"
+            download="{{notebook_name}}"
+            class="btn btn-outline-primary"
+            role="button">
+            <i class="fas fa-download"></i> 
+            <span>
+              Download
+            </span>
+          </a>
+
+          <!-- save to seafile -->
+          <button id="saveInDrive"
+            class="btn requires-login"
+            aria-text="Save in drive.ebrains.eu">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </button>
+
+          <!-- run on lab.ebrains.eu -->
+          <!-- TODO disabling running on jupyter lab as a result of sync issue between jupyterhub and seafile -->
+          <form target="_blank" method="post" action="postNb/{{wjNbId}}">
+            <input class="d-none" type="text" value="jupyter" name="target" class="invisible">
+            <button class="btn requires-login"
+              type="submit"
+              aria-text="Run in lab.ebrains.eu">
+              <i class="fas fa-play"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- padding -->
+        <div class="flex-grow-1 flex-shrink-1 d-inline-flex align-items-center pl-2 h-0">
+          {% if not user %}
+          <i class="text-muted">
+            Signin to enable cloud features
+          </i>
+          {% endif %}
+        </div>
+
+        <!-- login banner -->
+        <div class="flex-grow-0 flex-shrink-0">
+          {% if user %}
+          <!-- user logged in -->
+          <span>
+            Logged in as ???
+          </span>
+    
+          <a href="logout"
+            class="btn btn-danger">
+            <i class="fas fa-sign-out-alt"></i>
+          </a>
+          {% endif %}
+    
+          {% if not user %}
+          <!-- user not logged in -->
+          <span>
+            Not logged in
+          </span>
+    
+          <a href="login"
+            class="btn btn-primary"
+            role="button"
+            aria-text="login via iam.ebrains.eu">
+            <i class="fas fa-sign-in-alt"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- warning container -->
+
+      <div id="warning-container" class="mt-2 d-none d-inline-flex w-100">
+
+      </div>
+    </div>
+  </div>
+
+  <div id="notebook-container">
+    <iframe src="{{ view_notebook_url }}"></iframe>
+  </div>
+</body>
+<script>
+    {% if user %}
+    let loggedIn = true
+    {% else %}
+    let loggedIn = false
+    {% endif %}
+
+
+    const nodes = document.querySelectorAll('.requires-login')
+    for (const node of nodes){
+        if (!loggedIn) node.classList.add('disabled')
+        node.classList.add(
+            loggedIn ? 'btn-outline-primary' : 'btn-outline-secondary'
+        )
+    }
+        
+</script>
+</html>
