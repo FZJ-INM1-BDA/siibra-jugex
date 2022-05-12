@@ -11,10 +11,10 @@ html_exporter = HTMLExporter(template_name="classic")
 router = APIRouter()
 
 root_dir=path.abspath(
-    path.join((
+    path.join(
         path.dirname(__file__),
         "../.."
-    ))
+    )
 )
 templates = Jinja2Templates(directory=path.join(root_dir, "siibra_jugex_http/templates/"))
 
