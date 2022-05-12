@@ -12,8 +12,9 @@ jobs:
         test_path: ['siibra_jugex', 'siibra_jugex_http']
         include:
         - test_path: siibra_jugex
+          pip_install: '.'
         - test_path: siibra_jugex_http
-          pip_install: '-r ./siibra_jugex_http/requirements-server.txt'
+          pip_install: '-r ./siibra_jugex_http/requirements-server.txt requests'
 
     steps:
     - uses: actions/checkout@v2
