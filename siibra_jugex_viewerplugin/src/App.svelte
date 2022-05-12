@@ -46,11 +46,18 @@
 
 <Card>
 	<Content>
-		<Button on:click={runAnalysis} disabled={!canRunFlag}>
-			<Label>
-				Run
-			</Label>
-		</Button>
+		<Group>
+			<Button on:click={runAnalysis} disabled={!canRunFlag}>
+				<Label>
+					Run
+				</Label>
+			</Button>
+			<Button href={notebookUrl} target="_blank" disabled={!canRunFlag}>
+				<Label>
+					Notebook
+				</Label>
+			</Button>
+		</Group>
 		{#if runningFlag}
 		<CircularProgress style="width:1rem;height:1rem;" indeterminate />
 		{/if}
@@ -81,7 +88,7 @@
 	import JugexSlider from "./JugexSlider.svelte"
 	import { hasDataSrc, getGeneNames, SIIBRA_JUGEX_ENDPOINT, parcellationId } from "./store.js"
 	import Card, { Content } from "@smui/card"
-	import Button, { Label, Icon } from "@smui/button"
+	import Button, { Label, Icon, Group } from "@smui/button"
 	import CircularProgress from "@smui/circular-progress"
 	import ShowResult from "./ShowResult.svelte"
   	import { onDestroy, tick } from "svelte"
@@ -104,6 +111,7 @@
 
 	const defaultPerm = 100
 	const defaultTreshold = 0.2
+	let notebookUrl = ""
 
 	let param = {
 		parcellation_id: parcellationId,
@@ -115,6 +123,17 @@
 	}
 
 	$: canRunFlag = !runningFlag && !!param.roi_1 && !!param.roi_2 && param.genes.length > 0
+	$: {
+		const searchParam = new URLSearchParams()
+		searchParam.set("parcellation_id", parcellationId)
+		searchParam.set("roi_1", param.roi_1)
+		searchParam.set("roi_2", param.roi_2)
+		searchParam.set("comma_delimited_genes", param.genes.join(","))
+		searchParam.set("permutations", param.permutations)
+		searchParam.set("threshold", param.threshold)
+		
+		notebookUrl = `notebook/view?${searchParam.toString()}`
+	}
 
 	hasDataSrc.subscribe(flag => hasDataSrcFlag = flag)
 
