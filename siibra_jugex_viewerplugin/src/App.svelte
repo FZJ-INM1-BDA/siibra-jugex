@@ -132,7 +132,7 @@
 		searchParam.set("permutations", param.permutations)
 		searchParam.set("threshold", param.threshold)
 		
-		notebookUrl = `notebook/view?${searchParam.toString()}`
+		notebookUrl = `../notebook/view?${searchParam.toString()}`
 	}
 
 	hasDataSrc.subscribe(flag => hasDataSrcFlag = flag)
