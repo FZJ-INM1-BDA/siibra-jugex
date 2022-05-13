@@ -8,24 +8,28 @@
 
 	<title>siibra-jugex workbook</title>
     <style>
+    body
+    {
+      overflow: hidden;
+    }
     html, body, iframe
     {
-        width: 100%;
-        height: 100%;
-        border: none;
+      width: 100%;
+      height: 100%;
+      border: none;
     }
     .disabled
     {
-        pointer-events:none;
+      pointer-events:none;
     }
     body
     {
-        display: flex;
-        flex-direction: column;
+      display: flex;
+      flex-direction: column;
     }
     body #notebook-container
     {
-        flex: 0px 1 1;
+      flex: 0px 1 1;
     }
     </style>
 </head>
@@ -86,10 +90,10 @@
           {% endif %}
         </div>
 
-        <!-- login banner -->
+        {# login banner #}
         <div class="flex-grow-0 flex-shrink-0">
+          {# user logged in #}
           {% if user %}
-          <!-- user logged in -->
           <span>
             Logged in as ???
           </span>
@@ -100,8 +104,9 @@
           </a>
           {% endif %}
     
-          {% if not user %}
-          <!-- user not logged in -->
+          {# user not logged in  #}
+          {# TODO need to rig in user login logic #}
+          {% if False and not user %}
           <span>
             Not logged in
           </span>
