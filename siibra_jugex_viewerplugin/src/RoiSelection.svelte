@@ -9,6 +9,13 @@
     on:keydown={handleKeydown}
     on:SMUIAutocomplete:selected={ev => regionSelected(ev.detail)}>
     <Textfield label={label} bind:value={autocmplText} />
+
+    <Text
+      slot="loading"
+      style="display: flex; width: 100%; justify-content: center; align-items: center;"
+    >
+      <CircularProgress style="height: 24px; width: 24px;" indeterminate />
+    </Text>
   </Autocomplete>
 
 
@@ -48,7 +55,8 @@
   import Textfield from '@smui/textfield';
   import { hasDataSrc, searchRegion } from "./store.js"
   import { createEventDispatcher } from "svelte"
-  import Chip, { Set as ChipsSet, Text, TrailingAction } from "@smui/chips"
+  import Chip, { Set as ChipsSet, Text } from "@smui/chips"
+  import CircularProgress from '@smui/circular-progress';
 
   let hasDataSrcFlag = false
   let searchId = 1
@@ -91,10 +99,15 @@
     if (input === '' || !input) {
       return []
     }
+    if (input === currentAutocompleteList[0]) {
+      return false
+    }
+    currentAutocompleteList = []
     searchId += 1
     const thisSearchId = searchId
+    await new Promise(rs => setTimeout(rs, 160))
+    if (thisSearchId !== searchId) return false
     const returnArr = await searchRegion(input)
-    if (thisSearchId !== searchId) return []
     currentAutocompleteList = returnArr.map(r => r.name)
     return currentAutocompleteList
   }

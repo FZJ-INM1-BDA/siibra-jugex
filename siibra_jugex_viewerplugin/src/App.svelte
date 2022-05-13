@@ -52,14 +52,50 @@
 					Run
 				</Label>
 			</Button>
+
+			{#if canRunFlag}
 			<Button href={notebookUrl} target="_blank" disabled={!canRunFlag}>
 				<Label>
 					Notebook
 				</Label>
 			</Button>
+			{:else}
+			<Button disabled>
+				<Label>
+					Notebook
+				</Label>
+			</Button>
+			{/if}
 		</Group>
 		{#if runningFlag}
 		<CircularProgress style="width:1rem;height:1rem;" indeterminate />
+		{/if}
+
+		{#if errorText}
+		{errorText}
+		{/if}
+
+		{#if downloadUrl || result}
+		<hr>
+		{/if}
+
+		{#if result}
+		<DataTable>
+			<Head>
+				<Row>
+					<Cell>gene</Cell>
+					<Cell>p-value</Cell>
+				</Row>
+			</Head>
+			<Body>
+				{#each Object.entries(result['result']['p-values']) as [gene, pval]}
+				<Row>
+					<Cell>{gene}</Cell>
+					<Cell>{pval}</Cell>
+				</Row>
+				{/each}
+			</Body>
+		</DataTable>
 		{/if}
 
 		{#if downloadUrl}
@@ -75,9 +111,6 @@
 		<ShowResult {postMessage} {result} />
 		{/if}
 
-		{#if errorText}
-		{errorText}
-		{/if}
 	</Content>
 </Card>
 {/if}
@@ -92,7 +125,7 @@
 	import CircularProgress from "@smui/circular-progress"
 	import ShowResult from "./ShowResult.svelte"
   	import { onDestroy, tick } from "svelte"
-  
+	import DataTable, { Head, Body, Row, Cell } from "@smui/data-table"
 
 	const getUuid = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
 
@@ -266,7 +299,7 @@
 					if (status === "FAILURE") {
 						console.log('FAILURE')
 						clearInterval(intervalRef)
-						rj("operation feailed")
+						rj("operation failed")
 					}
 				}, 1000)
 			})
