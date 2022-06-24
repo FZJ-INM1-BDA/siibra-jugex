@@ -16,7 +16,7 @@ root_dir=path.abspath(
         "../.."
     )
 )
-templates = Jinja2Templates(directory=path.join(root_dir, "siibra_jugex_http/templates/"))
+templates = Jinja2Templates(directory=path.join(root_dir, "http_wrapper/templates/"))
 
 def get_notebook(post_req:PostReqModel):
     path_to_notebook = path.join(root_dir, "examples/siibra-jugex.ipynb")

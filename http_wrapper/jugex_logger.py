@@ -6,7 +6,7 @@ main_logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__ + '.general')
 access_logger = logging.getLogger(__name__ + '.access')
 
-log_dir = os.environ.get("SIIBRA_JUGEX_LOG_DIR")
+log_dir = os.environ.get("SIIBRA_TOOLBOX_LOG_DIR")
 
 if log_dir:
     from logging.handlers import TimedRotatingFileHandler
