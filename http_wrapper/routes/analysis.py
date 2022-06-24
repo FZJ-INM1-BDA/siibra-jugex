@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter
 from pydantic import Field
 
-from siibra_jugex_http.routes.common import PostReqModel, BModel
-from siibra_jugex_http.scheduling.worker import analysis
+from http_wrapper.routes.common import PostReqModel, BModel
+from http_wrapper.scheduling.worker import analysis
 
 router = APIRouter()
 

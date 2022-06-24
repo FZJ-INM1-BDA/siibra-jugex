@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from siibra_jugex_http.main import app
+from http_wrapper.server import app
 
 client = TestClient(app)
 

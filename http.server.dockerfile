@@ -1,8 +1,9 @@
 # viewer plugin builder
-FROM node:16-alpine as builder
+# uncomment if plugin is required
 
-COPY ./siibra_jugex_viewerplugin /siibra_jugex_viewerplugin
-WORKDIR /siibra_jugex_viewerplugin
+FROM node:16-alpine as builder
+COPY ./viewer_plugin /viewer_plugin
+WORKDIR /viewer_plugin
 RUN mkdir -p public/build
 RUN npm i
 RUN npm run build
@@ -11,17 +12,23 @@ RUN npm run build
 FROM python:3.10-alpine
 RUN pip install -U pip
 
-RUN mkdir -p /siibra_jugex
-COPY ./siibra_jugex_http/requirements-server.txt /siibra_jugex/requirements-server.txt
-RUN pip install -r /siibra_jugex/requirements-server.txt
+RUN mkdir /requirements
+COPY ./http_wrapper/requirements-server.txt /requirements/
+RUN pip install -r /requirements/requirements-server.txt
 
-COPY ./siibra_jugex_http /siibra_jugex/siibra_jugex_http
-COPY ./examples /siibra_jugex/examples
-WORKDIR /siibra_jugex/
 
-COPY --from=builder /siibra_jugex_viewerplugin/public /siibra_jugex/siibra_jugex_http/public
-ENV SIIBRA_JUGEX_STATIC_DIR=/siibra_jugex/siibra_jugex_http/public
+# NB
+# the path is chosen deliberately to allow for proper config mapping
+# modify this at your own peril
+COPY . /siibra_toolbox
+WORKDIR /siibra_toolbox
+
+# copy built artefact to deployment
+# uncomment if plugin is required
+
+COPY --from=builder /viewer_plugin/public /siibra_toolbox/public
+ENV SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR=/siibra_toolbox/public
 
 USER nobody
 EXPOSE 6001
-ENTRYPOINT uvicorn siibra_jugex_http.main:app --port 6001 --host 0.0.0.0
+ENTRYPOINT uvicorn http_wrapper.server:app --port 6001 --host 0.0.0.0

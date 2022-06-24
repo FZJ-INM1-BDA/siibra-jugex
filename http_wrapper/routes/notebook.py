@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 import nbformat
 from nbconvert import HTMLExporter
 
-from siibra_jugex_http.routes.common import PostReqModel, common_params, reverse_param
+from http_wrapper.routes.common import PostReqModel, common_params, reverse_param
 
 html_exporter = HTMLExporter(template_name="classic")
 router = APIRouter()
