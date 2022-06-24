@@ -1,0 +1,35 @@
+{
+  "name": "siibra-jugex-viewer-plugin",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm run theme && npm run theme:dark && rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public --no-clear -p 8000",
+    "theme": "npm run theme:light && npm run theme:dark",
+    "theme:light": "smui-theme compile public/build/smui.css -i src/theme",
+    "theme:dark": "smui-theme compile public/build/smui-dark.css -i src/theme/dark"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "@smui-extra/autocomplete": "^6.0.0-beta.16",
+    "@smui/button": "^6.0.0-beta.16",
+    "@smui/card": "^6.0.0-beta.16",
+    "@smui/chips": "^6.0.0-beta.16",
+    "@smui/circular-progress": "^6.0.0-beta.16",
+    "@smui/data-table": "^6.0.0-beta.16",
+    "@smui/form-field": "^6.0.0-beta.16",
+    "@smui/icon-button": "^6.0.0-beta.16",
+    "@smui/slider": "^6.0.0-beta.16",
+    "@smui/switch": "^6.0.0-beta.16",
+    "rollup": "^2.3.4",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^7.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "sirv-cli": "^2.0.0",
+    "smui-theme": "^6.0.0-beta.16",
+    "svelte": "^3.0.0"
+  },
+  "dependencies": {}
+}

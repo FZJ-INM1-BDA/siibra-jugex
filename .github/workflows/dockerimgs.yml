@@ -1,0 +1,98 @@
+name: '[docker image]'
+
+on:
+  push:
+    branches:
+    - feat_workerFrontend
+  # release:
+  #   types:
+  #   - published
+
+jobs:
+  build-docker-img:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        dockerfile: ['./http.server.dockerfile', './http.worker.dockerfile']
+        include:
+        - dockerfile: ./http.server.dockerfile
+          dockerimg: siibra-jugex-server
+        - dockerfile: ./http.worker.dockerfile
+          dockerimg: siibra-jugex-worker
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Setup tags'
+      run: |
+        VERSION=$(grep -Po '^__version__.*?"\K[\w.]+' http_wrapper/__init__.py)
+        echo "Setting version to $VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+        DOCKER_IMGSTREAM=${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_NSP }}/${{ matrix.dockerimg }}
+        echo "Setting docker image stream to $DOCKER_IMGSTREAM"
+        echo "DOCKER_IMGSTREAM=$DOCKER_IMGSTREAM" >> $GITHUB_ENV
+
+    - name: 'Build docker image'
+      run: |
+        DOCKER_BUILT_TAG=$DOCKER_IMGSTREAM:$VERSION
+        echo "Building $DOCKER_BUILT_TAG"
+        docker build \
+          -t $DOCKER_BUILT_TAG \
+          -f ${{ matrix.dockerfile }} \
+          .
+        echo "Successfully built $DOCKER_BUILT_TAG"
+        echo "DOCKER_BUILT_TAG=$DOCKER_BUILT_TAG" >> $GITHUB_ENV
+
+    - name: 'Push to docker registry'
+      run: |
+        echo "Login to docker registry"
+        docker login \
+          -u '${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_PUSHER_USER }}' \
+          -p '${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_PUSHER_PWSD }}' \
+          ${{ secrets.EBRAINS_DOCKER_REG }}
+        echo "Pushing $DOCKER_BUILT_TAG"
+        docker push $DOCKER_BUILT_TAG
+    
+    - name: 'Tag versioned tag to registry'
+      run: |
+        
+        echo "Login to docker registry"
+        docker login \
+          -u '${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_PUSHER_USER }}' \
+          -p '${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_PUSHER_PWSD }}' \
+          ${{ secrets.EBRAINS_DOCKER_REG }}
+
+        BREAK=5
+        while [[ "$VERSION" == *"."* ]]
+        do
+          if [[ "$BREAK" == "0" ]]
+          then
+            echo "Fuse broke!"
+            exit 1
+          fi
+          VERSIONED_DOCKERTAG=$DOCKER_IMGSTREAM:$VERSION
+          echo "tagging and pushing $VERSIONED_DOCKERTAG"
+          docker tag $DOCKER_BUILT_TAG $VERSIONED_DOCKERTAG
+          docker push $VERSIONED_DOCKERTAG
+
+          echo "Push successful... Incrementing version & break"
+          VERSION=$(echo $VERSION | sed -e 's/\.\w*$//g')
+          BREAK=$(( "$BREAK" - 1 ))
+        done
+        echo "Done"
+
+    # - name: image pull on OKD
+    #   run: |
+    #     if [ ! -z "${{ secrets.EBRAINS_OKD_DEV_ENDPOINT }}" ]
+    #     then
+    #       if [ ! -z "${{ secrets.EBRAINS_OKD_DEV_SECRET }}" ]
+    #       then
+    #         oc login ${{ secrets.EBRAINS_OKD_DEV_ENDPOINT }} --token=${{ secrets.EBRAINS_OKD_DEV_SECRET }}
+    #         oc project ${{ env.EBRAINS_OKD_PROJECT }}
+    #         oc import-image $DOCKER_BUILT_TAG
+    #       else
+    #         echo "secrets.EBRAINS_OKD_DEV_SECRET not set, skipping ..."
+    #       fi
+    #     else
+    #       echo "secrets.EBRAINS_OKD_DEV_ENDPOINT not set, skipping..."
+    #     fi
