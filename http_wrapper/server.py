@@ -18,6 +18,14 @@ app.add_middleware(
     allow_methods=['GET', 'POST'],
 )
 
+@app.get('/', include_in_schema=False)
+def hello():
+    return 'world'
+    
+@app.get('/ready', include_in_schema=False)
+def hello():
+    return 'OK'
+
 @app.middleware('http')
 async def access_log(request: Request, call_next):
     start_time = time.time()
@@ -28,10 +36,6 @@ async def access_log(request: Request, call_next):
         'process_time_ms': str(round(process_time))
     })
     return resp
-
-@app.get('/', include_in_schema=False)
-def hello():
-    return 'world'
 
 app.include_router(analysis_router, prefix="/analysis")
 app.include_router(notebook_router, prefix="/notebook")
