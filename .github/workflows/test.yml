@@ -9,12 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_path: ['siibra_jugex', 'siibra_jugex_http']
+        test_path: ['siibra_jugex', 'http_wrapper']
         include:
         - test_path: siibra_jugex
           pip_install: '.'
-        - test_path: siibra_jugex_http
-          pip_install: '-r ./siibra_jugex_http/requirements-server.txt'
+        - test_path: http_wrapper
+          pip_install: '-r ./http_wrapper/requirements-server.txt'
           pip_install_extra: 'requests .'
 
     steps:
