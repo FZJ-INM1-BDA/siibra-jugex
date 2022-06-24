@@ -12,10 +12,10 @@ if log_dir:
     from logging.handlers import TimedRotatingFileHandler
     import socket
     
-    general_filename = log_dir + f"{socket.gethostname()}.general.log"
+    general_filename = os.path.join(log_dir, f"{socket.gethostname()}.general.log")
     general_log_handler = TimedRotatingFileHandler(general_filename, when="d", encoding="utf-8")
     
-    access_filename = log_dir + f"{socket.gethostname()}.access.log"
+    access_filename = os.path.join(log_dir, f"{socket.gethostname()}.access.log")
     access_log_handler = TimedRotatingFileHandler(access_filename, when="d", encoding="utf-8")
 
 else:
