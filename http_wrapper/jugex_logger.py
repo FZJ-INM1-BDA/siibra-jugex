@@ -2,6 +2,7 @@ import logging
 import os
 
 main_logger = logging.getLogger(__name__)
+main_logger.setLevel(logging.INFO)
 
 logger = logging.getLogger(__name__ + '.general')
 access_logger = logging.getLogger(__name__ + '.access')
