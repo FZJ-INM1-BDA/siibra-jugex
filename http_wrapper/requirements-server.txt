@@ -4,3 +4,4 @@ uvicorn==0.16.0
 ipython_genutils==0.2.0 # required by nbconvert, but absent if jupyter is not installed
 nbconvert==6.0.7
 jinja2==3.0.3
+python-gitlab

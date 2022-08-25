@@ -59,14 +59,18 @@
           </a>
 
           {% if run_ebrains_lab %}
-          <a href="{{ run_ebrains_lab }}" target="_blank">
+          <a href="{{ run_ebrains_lab }}"
+            target="_blank"
+            class="btn btn-outline-primary">
             <i class="fas fa-play"></i>
             <span>Run on lab.ebrains.eu</span>
           </a>
           {% endif %}
 
           {% if run_my_binder %}
-          <a href="{{ run_my_binder }}" target="_blank">
+          <a href="{{ run_my_binder }}"
+            target="_blank"
+            class="btn btn-outline-primary">
             <i class="fas fa-play"></i>
             <span>Run on my binder</span>
           </a>
