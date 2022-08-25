@@ -1,6 +1,12 @@
 <svelte:window on:message={handleMessage}/>
 
-{#if !destroyFlag}
+{#if selectionError}
+<span>
+	{selectionError}
+</span>
+{/if}
+
+{#if !destroyFlag && !selectionError}
 <Card>
 	<Content>
 		<h3>ROI Selection</h3>
@@ -130,6 +136,7 @@
 	const getUuid = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
 
 	let destroyFlag = false
+	let selectionError = null
 	let destroyCbObj = []
 
 	let hasDataSrcFlag = false
@@ -215,7 +222,33 @@
 				srcOrigin = origin
 				break
 			}
-			break
+			case 'sxplr.on.atlasSelected': {
+				if (params['@id'] !== "juelich/iav/atlas/v1.0.0/1") {
+					/**
+					 * wrong atlas
+					*/
+					selectionError = "Selected atlas must be multilevel human atlas"
+				}
+				break
+			}
+			case 'sxplr.on.templateSelected': {
+				if (params['@id'] !== "minds/core/referencespace/v1.0.0/dafcffc5-4826-4bf1-8ff6-46b8a31ff8e2") {
+					/**
+					 * wrong template
+					*/
+					selectionError = "Selected template must be MNI152"
+				}
+				break
+			}
+			case 'sxplr.on.parcellationSelected': {
+				if (params['@id'] !== "minds/core/parcellationatlas/v1.0.0/94c1125b-b87e-45e4-901c-00daee7f2579-290") {
+					/**
+					 * wrong parcellation
+					*/
+					selectionError = "Selected parcellation must be Julich Brain 2.9"
+				}
+				break
+			}
 		}
 	}
 
