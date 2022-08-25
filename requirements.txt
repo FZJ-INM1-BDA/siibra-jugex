@@ -1,3 +1,4 @@
 siibra>=0.3a17
 statsmodels
 scipy
+python-gitlab

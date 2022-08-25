@@ -44,3 +44,14 @@ if getenv("SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR"):
     path_to_viewer_plugin = getenv("SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR")
     app.mount('/viewer_plugin', StaticFiles(directory=path_to_viewer_plugin))
 
+from threading import Event
+
+kill_event = Event()
+
+@app.on_event("shutdown")
+def shutdown_event():
+    # TODO doesn't work quite right
+    # shutdown handler isn't called until ctrl+c is hit twice
+    
+    kill_event.set()
+    

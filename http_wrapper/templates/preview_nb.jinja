@@ -38,12 +38,8 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">
-        siibra-jugex
+        siibra-jugex notebook previewer
       </h1>
-      <p class="lead">
-        lead
-      </p>
-
       <hr class="my-4">
       
       <!-- button container -->
@@ -62,61 +58,19 @@
             </span>
           </a>
 
-          <!-- save to seafile -->
-          <button id="saveInDrive"
-            class="btn requires-login"
-            aria-text="Save in drive.ebrains.eu">
-            <i class="fas fa-cloud-upload-alt"></i>
-          </button>
-
-          <!-- run on lab.ebrains.eu -->
-          <!-- TODO disabling running on jupyter lab as a result of sync issue between jupyterhub and seafile -->
-          <form target="_blank" method="post" action="postNb/{{wjNbId}}">
-            <input class="d-none" type="text" value="jupyter" name="target" class="invisible">
-            <button class="btn requires-login"
-              type="submit"
-              aria-text="Run in lab.ebrains.eu">
-              <i class="fas fa-play"></i>
-            </button>
-          </form>
-        </div>
-
-        <!-- padding -->
-        <div class="flex-grow-1 flex-shrink-1 d-inline-flex align-items-center pl-2 h-0">
-          {% if not user %}
-          <i class="text-muted">
-            Signin to enable cloud features
-          </i>
-          {% endif %}
-        </div>
-
-        {# login banner #}
-        <div class="flex-grow-0 flex-shrink-0">
-          {# user logged in #}
-          {% if user %}
-          <span>
-            Logged in as ???
-          </span>
-    
-          <a href="logout"
-            class="btn btn-danger">
-            <i class="fas fa-sign-out-alt"></i>
+          {% if run_ebrains_lab %}
+          <a href="{{ run_ebrains_lab }}" target="_blank">
+            <i class="fas fa-play"></i>
+            <span>Run on lab.ebrains.eu</span>
           </a>
           {% endif %}
-    
-          {# user not logged in  #}
-          {# TODO need to rig in user login logic #}
-          {% if False and not user %}
-          <span>
-            Not logged in
-          </span>
-    
-          <a href="login"
-            class="btn btn-primary"
-            role="button"
-            aria-text="login via iam.ebrains.eu">
-            <i class="fas fa-sign-in-alt"></i>
+
+          {% if run_my_binder %}
+          <a href="{{ run_my_binder }}" target="_blank">
+            <i class="fas fa-play"></i>
+            <span>Run on my binder</span>
           </a>
+
           {% endif %}
         </div>
       </div>
@@ -140,14 +94,5 @@
     let loggedIn = false
     {% endif %}
 
-
-    const nodes = document.querySelectorAll('.requires-login')
-    for (const node of nodes){
-        if (!loggedIn) node.classList.add('disabled')
-        node.classList.add(
-            loggedIn ? 'btn-outline-primary' : 'btn-outline-secondary'
-        )
-    }
-        
 </script>
 </html>
