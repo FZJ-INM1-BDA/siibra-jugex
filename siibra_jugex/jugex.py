@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
 from . import logger
 
 import siibra
@@ -32,6 +31,23 @@ import statsmodels.api as sm
 import numpy as np
 from concurrent import futures
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Dict, List, Tuple, Union
+import json
+
+
+@dataclass
+class Sample:
+    race: str
+    gender: str
+    age: int
+    name: str
+    id: int
+    mnicoord: Tuple[float]
+    region: siibra.core.Region
+    gene: str
+    winsorized_mean: Dict[str, float]
+    gene_expression: siibra.features.genes.GeneExpression
 
 
 class DifferentialGeneExpression:
@@ -55,11 +71,30 @@ class DifferentialGeneExpression:
         self._pvals = None
         self._index_by_regionspec = {}
         self._regionspecs = [None,None]
-        self._sampledicts = [defaultdict(dict) for _ in range(2)]
+        self._sampledicts: List[Dict[Tuple[float, float, float, str], Sample]] = [defaultdict(dict) for _ in range(2)]
         self.genes = set(gene_names)
         if not parcellation.supports_space(MNI152SPACE):
             raise Exception(f"{MNI152SPACE.name} space not supported by selected parcellation {parcellation}.")
         self.parcellation = parcellation
+        self.semantic_filter: List[Union[str, int]] = None
+    
+    def reset_semantic_filter(self):
+        self.semantic_filter = None
+    
+    def add_semantic_filter(self, filter_value: Union[Union[str, int], List[Union[str, int]]]):
+        if self.semantic_filter is None:
+            self.semantic_filter = []
+        if type(filter_value) is list:
+            self.semantic_filter = [*self.semantic_filter, *filter_value]
+        else:
+            self.semantic_filter = [*self.semantic_filter, filter_value]
+
+
+    @property
+    def sample_structures(self):
+        return [roi_sample_dict[key].gene_expression.structure
+            for roi_sample_dict in self._sampledicts
+            for key in roi_sample_dict]
 
     @staticmethod
     def _anova_iteration(area,zscores,donor_factors):
@@ -182,7 +217,7 @@ class DifferentialGeneExpression:
         self.genes.add(gene_name)
         return True
 
-    def _define_roi(self,regionspec,roi_index,maptype:siibra.MapType=siibra.MapType.CONTINUOUS,threshold:float=0.2):
+    def _define_roi(self,regionspec,roi_index:int,maptype:siibra.MapType=siibra.MapType.CONTINUOUS,threshold:float=0.2):
         """
         (Re-)Defines a region of interest.
 
@@ -289,22 +324,30 @@ class DifferentialGeneExpression:
         if region is None:
             logger.warn("Region definition '{}' could not be matched in atlas.".format(regionspec))
             return None
-        samples = defaultdict(dict)
+        samples: Dict[Tuple[float, float, float, str], Sample] = defaultdict(dict)
         for gene_name in self.genes:
             for f in siibra.get_features(region, "gene", gene=gene_name, maptype=maptype, threshold_continuous=threshold):
                 key = tuple(list(f.location)+[regionspec])
-                samples[key] = {**samples[key], **f.donor_info}
-                samples[key]['mnicoord'] = tuple(f.location)
-                samples[key]['region'] = region
-                samples[key][gene_name] =  np.mean(
-                        winsorize(f.z_scores, limits=0.1))
+                if key in samples:
+                    samples[key].winsorized_mean[gene_name] = np.mean(winsorize(f.z_scores, limits=0.1))
+                else:
+                    samples[key] = Sample(
+                        mnicoord=tuple(f.location),
+                        region=region,
+                        gene=gene_name,
+                        winsorized_mean={
+                            gene_name: np.mean(winsorize(f.z_scores, limits=0.1))
+                        },
+                        gene_expression=f,
+                        **f.donor_info,
+                    )
         logger.info('{} samples found for region {}.'.format(
             len(samples), regionspec))
         return samples
 
 
     @staticmethod
-    def _filter_samples(samples):
+    def _filter_samples(samples: Dict[Tuple[float, float, float, str], Sample]):
         """
         Filter out duplicate samples from the samples dictionary.
 
@@ -334,14 +377,26 @@ class DifferentialGeneExpression:
         the two sets of collected samples per gene.
         """
         samples = {**self._sampledicts[0], **self._sampledicts[1]}
+        if self.semantic_filter is not None:
+            logger.info(f"Semantic filtering allow list is set... filtering accoring to the criteria: {json.dumps(self.semantic_filter)}")
+            prev_len = len(samples.keys())
+            samples = {
+                sample_key: samples[sample_key]
+                for sample_key in samples
+                if any(
+                    samples[sample_key].gene_expression.structure[structure_key] in self.semantic_filter
+                    for structure_key in samples[sample_key].gene_expression.structure
+                )
+            }
+            logger.info(f"Filtered... Reduced samples from {prev_len} to {len(samples.keys())}")
         factors = {
-            'race' : [s['race'] for s in samples.values()],
-            'age' : [s['age'] for s in samples.values()],
-            'specimen' : [s['name'] for s in samples.values()],
-            'area' : [s['region'].name for s in samples.values()],
-            'zscores' : {g:[s[g] for s in samples.values()]
+            'race' : [s.race for s in samples.values()],
+            'age' : [s.age for s in samples.values()],
+            'specimen' : [s.name for s in samples.values()],
+            'area' : [s.region.name for s in samples.values()],
+            'zscores' : {g :[s.winsorized_mean[g]  for s in samples.values()]
                           for g in self.genes},
-            'mnicoord' : [s['mnicoord'] for s in samples.values()]
+            'mnicoord' : [s.mnicoord for s in samples.values()]
         }
         return factors
 
