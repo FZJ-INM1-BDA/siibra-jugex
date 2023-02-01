@@ -17,12 +17,10 @@ from typing import List
 from . import logger
 
 import siibra
-import re
 from scipy.stats.mstats import winsorize
 from statsmodels.formula.api import ols
 import statsmodels.api as sm
 import numpy as np
-import pandas as pd
 from concurrent import futures
 from collections import defaultdict
 
@@ -62,7 +60,7 @@ class DifferentialGeneExpression:
     ):
         self._pvals = None
         self._index_by_regionspec = {}
-        self._regionspecs = [None,None]
+        self._regionspecs = [None, None]
         self._sampledicts = [defaultdict(dict) for _ in range(2)]
         self.genes = set(gene_names)
         if not parcellation.supports_space(MNI152SPACE):
