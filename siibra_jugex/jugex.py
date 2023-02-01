@@ -297,7 +297,7 @@ class DifferentialGeneExpression:
                 samples[key]['mnicoord'] = tuple(f.location)
                 samples[key]['region'] = region
                 samples[key][gene_name] =  np.mean(
-                        winsorize(f.z_scores, limits=0.1))
+                        winsorize(np.array(f.z_scores), limits=0.1))
         logger.info('{} samples found for region {}.'.format(
             len(samples), regionspec))
         return samples
