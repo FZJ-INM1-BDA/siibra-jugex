@@ -236,7 +236,7 @@ class DifferentialGeneExpression:
                 if new_samples is None:
                     new_samples = self._retrieve_samples(region, maptype=maptype, threshold=threshold)
                 else:
-                    new_samples.update(self._retrieve_samples(region,maptype=maptype,threshold=threshold))
+                    new_samples.update(self._retrieve_samples(region, maptype=maptype, threshold=threshold))
             if new_samples is None:
                 raise Exception("Could not define ROI.")
             if self._regionspecs[roi_index] is not None:
@@ -377,7 +377,7 @@ class DifferentialGeneExpression:
                 g: [s[g] for s in samples.values()]
                 for g in self.genes
             },
-            'mnicoord' : [s['mnicoord'] for s in samples.values()]
+            'mnicoord': [s['mnicoord'] for s in samples.values()]
         }
         return factors
 
@@ -408,8 +408,20 @@ class DifferentialGeneExpression:
             Output filename
         """
         import json
+
+        class number_encoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                else:
+                    return super(number_encoder, self).default(obj)
+
         data = self.result()
         with open(filename, 'w') as f:
-            json.dump(data, f, indent="\t")
+            json.dump(data, f, indent="\t", cls=number_encoder)
             logger.info("Exported p-values and factors to file {}.".format(
                 filename))
