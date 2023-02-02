@@ -26,7 +26,7 @@ from collections import defaultdict
 
 
 MNI152SPACE = siibra.spaces.MNI_152_ICBM_2009C_NONLINEAR_ASYMMETRIC
-MIN_SIIBRA_VERSION = "0.4a27"
+MIN_SIIBRA_VERSION = "0.4a29"
 
 
 siibra_version = siibra.__version__
