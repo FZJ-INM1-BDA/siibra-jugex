@@ -2,7 +2,7 @@ import { writable } from "svelte/store"
 
 export const hasDataSrc = writable(false)
 
-export const SIIBRA_API_ENDPOINT = `https://siibra-api-dev.apps-dev.hbp.eu`
+export const SIIBRA_API_ENDPOINT = `https://siibra-api-stable.apps.hbp.eu`
 export const SIIBRA_JUGEX_ENDPOINT = ``
 
 export const getGeneNames = async () => {
