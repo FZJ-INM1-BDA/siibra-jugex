@@ -223,7 +223,8 @@
 				break
 			}
 			case 'sxplr.on.atlasSelected': {
-				if (params['@id'] !== "juelich/iav/atlas/v1.0.0/1") {
+				const atlasId = params['@id'] || params.id
+				if (atlasId !== "juelich/iav/atlas/v1.0.0/1") {
 					/**
 					 * wrong atlas
 					*/
@@ -232,7 +233,8 @@
 				break
 			}
 			case 'sxplr.on.templateSelected': {
-				if (params['@id'] !== "minds/core/referencespace/v1.0.0/dafcffc5-4826-4bf1-8ff6-46b8a31ff8e2") {
+				const spaceId = params['@id'] || params.id
+				if (spaceId !== "minds/core/referencespace/v1.0.0/dafcffc5-4826-4bf1-8ff6-46b8a31ff8e2") {
 					/**
 					 * wrong template
 					*/
@@ -241,7 +243,8 @@
 				break
 			}
 			case 'sxplr.on.parcellationSelected': {
-				if (params['@id'] !== "minds/core/parcellationatlas/v1.0.0/94c1125b-b87e-45e4-901c-00daee7f2579-290") {
+				const parcId = params['@id'] || params.id
+				if (parcId !== "minds/core/parcellationatlas/v1.0.0/94c1125b-b87e-45e4-901c-00daee7f2579-290") {
 					/**
 					 * wrong parcellation
 					*/

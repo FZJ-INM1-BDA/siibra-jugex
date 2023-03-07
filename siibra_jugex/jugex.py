@@ -17,7 +17,7 @@ from typing import List
 from . import logger
 
 import siibra
-MNI152SPACE = siibra.spaces.MNI152_2009C_NONL_ASYM
+MNI152SPACE = siibra.spaces['mni152']
 
 MIN_SIIBRA_VERSION=0.2
 import re
