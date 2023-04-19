@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+	<title>siibra-jugex workbook</title>
+    <style>
+    body
+    {
+      overflow: hidden;
+    }
+    html, body, iframe
+    {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .disabled
+    {
+      pointer-events:none;
+    }
+    body
+    {
+      display: flex;
+      flex-direction: column;
+    }
+    body #notebook-container
+    {
+      flex: 0px 1 1;
+    }
+    </style>
+</head>
+
+<body>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4">
+        siibra-jugex notebook previewer
+      </h1>
+      <hr class="my-4">
+      
+      <!-- button container -->
+      <div class="d-inline-flex w-100 align-items-center">
+        <div class="flex-grow-0 flex-shrink-0 btn-group"
+          role="group">
+
+          <!-- download to local -->
+          <a href="{{download_notebook_url}}"
+            download="{{notebook_name}}"
+            class="btn btn-outline-primary"
+            role="button">
+            <i class="fas fa-download"></i> 
+            <span>
+              Download
+            </span>
+          </a>
+
+          {% if run_ebrains_lab %}
+          <a href="{{ run_ebrains_lab }}"
+            target="_blank"
+            class="btn btn-outline-primary">
+            <i class="fas fa-play"></i>
+            <span>Run on lab.ebrains.eu</span>
+          </a>
+          {% endif %}
+
+          {% if run_my_binder %}
+          <a href="{{ run_my_binder }}"
+            target="_blank"
+            class="btn btn-outline-primary">
+            <i class="fas fa-play"></i>
+            <span>Run on my binder</span>
+          </a>
+
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- warning container -->
+
+      <div id="warning-container" class="mt-2 d-none d-inline-flex w-100">
+
+      </div>
+    </div>
+  </div>
+
+  <div id="notebook-container">
+    <iframe src="{{ view_notebook_url }}"></iframe>
+  </div>
+</body>
+<script>
+    {% if user %}
+    let loggedIn = true
+    {% else %}
+    let loggedIn = false
+    {% endif %}
+
+</script>
+</html>
