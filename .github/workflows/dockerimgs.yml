@@ -86,7 +86,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker-img
     steps:
-    - |
+    - name: 'Trigger deploy'
+      run: |
         if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_ENDPOINT }}" ]
         then
           if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_TOKEN }}" ]
