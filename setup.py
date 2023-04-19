@@ -4,16 +4,18 @@ import re
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 def find_version():
-    path_to_init=os.path.join(ROOT_DIR, 'siibra_jugex', '__init__.py')
+    path_to_init = os.path.join(ROOT_DIR, 'siibra_jugex', '__init__.py')
     with open(path_to_init, 'r', encoding="utf-8") as f:
-        content=f.read()
-        version_match=re.search(r"^__version__=['\"](.*?)['\"]$", content, re.M)
+        content = f.read()
+        version_match = re.search(r"^__version__ = ['\"](.*?)['\"]$", content, re.M)
         if version_match:
             return version_match.group(1)
         raise RuntimeError('version cannot be found!')
 
-with open(os.path.join(ROOT_DIR,"README.md"), "r", encoding="utf-8") as f:
+
+with open(os.path.join(ROOT_DIR, "README.md"), "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
@@ -35,6 +37,5 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>=3.6',
-    install_requires=['siibra>=0.3a17','statsmodels','scipy']
+    install_requires=['siibra>=0.4a29', 'statsmodels>=0.13', 'scipy>=1.9']
 )
-
