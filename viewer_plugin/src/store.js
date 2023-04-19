@@ -10,12 +10,12 @@ export const getGeneNames = async () => {
   return await res.json()
 }
 
-const atlasId = "juelich/iav/atlas/v1.0.0/1"
 export const parcellationId = "minds/core/parcellationatlas/v1.0.0/94c1125b-b87e-45e4-901c-00daee7f2579-290"
 export const searchRegion = async input => {
-  const url = new URL(`${SIIBRA_API_ENDPOINT}/v2_0/atlases/${atlasId}/parcellations/${parcellationId}/regions`)
+  const url = new URL(`${SIIBRA_API_ENDPOINT}/v3_0/regions`)
+  url.searchParams.set("parcellation_id", parcellationId)
   url.searchParams.set('find', input)
   const res = await fetch(url)
-  const arr = await res.json()
-  return arr
+  const respJson = await res.json()
+  return respJson.items
 }

@@ -1,4 +1,4 @@
-siibra>=0.3a17
+siibra>=0.3a17,<0.4
 statsmodels
 scipy
 
