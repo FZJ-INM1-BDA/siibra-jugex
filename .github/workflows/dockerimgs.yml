@@ -81,8 +81,12 @@ jobs:
         done
         echo "Done"
 
-    - name: image pull on OKD
-      run: |
+
+  deploy-on-okd:
+    runs-on: ubuntu-latest
+    needs: build-docker-img
+    steps:
+    - |
         if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_ENDPOINT }}" ]
         then
           if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_TOKEN }}" ]
