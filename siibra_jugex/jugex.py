@@ -80,7 +80,7 @@ class DifferentialGeneExpression:
         mod = ols('zscores ~ area + specimen + age + race',
                   data={**variable_factors, **donor_factors}).fit()
         aov_table = sm.stats.anova_lm(mod, typ=1)
-        return aov_table['F'][0]
+        return aov_table['F'].iloc[0]
 
     def run(self, permutations=1000, random_seed=None):
         """
