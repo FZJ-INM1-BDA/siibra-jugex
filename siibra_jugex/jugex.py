@@ -63,9 +63,9 @@ class DifferentialGeneExpression:
         self._regionspecs = [None, None]
         self._sampledicts = [defaultdict(dict) for _ in range(2)]
         self.genes = set(gene_names)
-        if not parcellation.supports_space(MNI152SPACE):
-            raise Exception(
-                f"{MNI152SPACE.name} space not supported by selected parcellation {parcellation}.")
+        # if not parcellation.supports_space(MNI152SPACE):
+        #    raise Exception(
+        #        f"{MNI152SPACE.name} space not supported by selected parcellation {parcellation}.")
         self.parcellation = parcellation
 
     @staticmethod
