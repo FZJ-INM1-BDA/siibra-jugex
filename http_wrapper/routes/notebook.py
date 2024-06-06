@@ -9,12 +9,11 @@ import os
 from uuid import uuid4
 from urllib.parse import quote, quote_plus
 from http_wrapper.routes.common import PostReqModel, common_params, reverse_param
+from http_wrapper.conf.siibra_jugex_conf import HBP_GITLAB_HOST, HBP_GITLAB_TOKEN, HBP_GITLAB_PROJECT_ID
 
-HBP_GITLAB_HOST = os.getenv("HBP_GITLAB_HOST") 
-HBP_GITLAB_TOKEN = os.getenv("HBP_GITLAB_TOKEN")
-HBP_GITLAB_PROJECT_ID = os.getenv("HBP_GITLAB_PROJECT_ID")
-
-run_now_enabled = HBP_GITLAB_HOST is not None and HBP_GITLAB_TOKEN is not None and HBP_GITLAB_PROJECT_ID is not None
+run_now_enabled = (HBP_GITLAB_HOST is not None
+                   and HBP_GITLAB_TOKEN is not None
+                   and HBP_GITLAB_PROJECT_ID is not None)
 
 class NotebookExecutionSite(Enum):
     EBRAINS_LAB="EBRAINS_LAB"
@@ -144,7 +143,10 @@ if run_now_enabled:
         gl = Gitlab(url=HBP_GITLAB_HOST, private_token=HBP_GITLAB_TOKEN)
         project = gl.projects.get(HBP_GITLAB_PROJECT_ID)
         project.branches.delete(branch)
-        
+    
+    @router.get("/redirect")
+    def redirect():
+        return RedirectResponse("https://lab.ebrains.eu/")
 
     @router.get("/run", tags=TAGS)
     def run_notebook(background_tasks: BackgroundTasks, site: NotebookExecutionSite, post_req:PostReqModel = Depends(common_params)):

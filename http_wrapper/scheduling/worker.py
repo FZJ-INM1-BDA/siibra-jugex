@@ -1,8 +1,7 @@
 from typing import List
 import os
 import logging
-
-CHANNEL = os.getenv("SIIBRA_JURGEX_CELERY_CHANNEL", "siibra_jugex_http")
+from http_wrapper.conf.siibra_jugex_conf import CHANNEL
 
 logger = logging.getLogger(__name__)
 

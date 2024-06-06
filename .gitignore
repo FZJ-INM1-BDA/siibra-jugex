@@ -10,3 +10,4 @@ upload_to_pypi.sh
 venv
 .vscode
 .env
+secret*

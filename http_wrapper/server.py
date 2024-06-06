@@ -1,11 +1,12 @@
 from http_wrapper.routes.analysis import router as analysis_router
 from http_wrapper.routes.notebook import router as notebook_router
+from http_wrapper.routes.git import router as git_router
 from http_wrapper.jugex_logger import access_logger
+from http_wrapper.conf.siibra_jugex_conf import SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from os import getenv
 import time
 
 app = FastAPI()
@@ -39,9 +40,10 @@ async def access_log(request: Request, call_next):
 
 app.include_router(analysis_router, prefix="/analysis")
 app.include_router(notebook_router, prefix="/notebook")
+app.include_router(git_router, prefix="/git")
 
-if getenv("SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR"):
-    path_to_viewer_plugin = getenv("SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR")
+if SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR:
+    path_to_viewer_plugin = SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR
     app.mount('/viewer_plugin', StaticFiles(directory=path_to_viewer_plugin))
 
 from threading import Event

@@ -82,25 +82,9 @@ jobs:
         echo "Done"
 
 
-  deploy-on-okd:
+  deploy-on-ebrains:
     runs-on: ubuntu-latest
     needs: build-docker-img
     steps:
-    - name: 'Trigger deploy'
-      run: |
-        if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_ENDPOINT }}" ]
-        then
-          if [ ! -z "${{ secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_TOKEN }}" ]
-          then
-            oc login ${{ secrets.EBRAINS_OKD_PRODCSCS_ENDPOINT }} --token=${{ secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_TOKEN }}
-            oc project ${{ secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_NSP }}
-            for dc in $(oc get dc -l app=siibra-toolbox-deploy-siibra-toolbox-jugex | awk '{print $1}' | tail -n +2)
-            do 
-              oc rollout latest dc/$dc
-            done
-          else
-            echo "secrets.EBRAINS_OKD_PRODCSCS_SIIBRATOOLBOX_TOKEN not set, skipping ..."
-          fi
-        else
-          echo "secrets.EBRAINS_OKD_PRODCSCS_ENDPOINT not set, skipping..."
-        fi
+    - name: "skip for now"
+      run: "echo skip for now"
