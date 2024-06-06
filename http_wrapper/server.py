@@ -1,5 +1,5 @@
 from http_wrapper.routes.analysis import router as analysis_router
-from http_wrapper.routes.notebook import router as notebook_router
+from http_wrapper.routes.notebook import router as notebook_router, on_exit
 from http_wrapper.routes.git import router as git_router
 from http_wrapper.jugex_logger import access_logger
 from http_wrapper.conf.siibra_jugex_conf import SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR
@@ -48,12 +48,9 @@ if SIIBRA_TOOLBOX_VIEWER_PLUGIN_STATIC_DIR:
 
 from threading import Event
 
-kill_event = Event()
-
 @app.on_event("shutdown")
 def shutdown_event():
     # TODO doesn't work quite right
     # shutdown handler isn't called until ctrl+c is hit twice
-    
-    kill_event.set()
+    on_exit()
     

@@ -122,23 +122,18 @@ def download_notebook(post_req:PostReqModel = Depends(common_params)):
     )
     return resp
 
+branches_to_delete = []
+
+def on_exit():
+    for branch in branches_to_delete:
+        delete_branch(branch)
+
 # Only add run endpoint if the necesary env vars are defined
 if run_now_enabled:
 
     # Do not use async, or else it will be blocking
     def delete_branch(branch: str):
-        from datetime import datetime
-        from http_wrapper.server import kill_event
-        from time import sleep
 
-        start = datetime.now()
-
-        diff_seconds = 0
-        while not kill_event.is_set() and diff_seconds < 600:
-            
-            diff_seconds = (datetime.now() - start).seconds
-            sleep(5)
-        
         from gitlab import Gitlab
         gl = Gitlab(url=HBP_GITLAB_HOST, private_token=HBP_GITLAB_TOKEN)
         project = gl.projects.get(HBP_GITLAB_PROJECT_ID)
@@ -149,7 +144,7 @@ if run_now_enabled:
         return RedirectResponse("https://lab.ebrains.eu/")
 
     @router.get("/run", tags=TAGS)
-    def run_notebook(background_tasks: BackgroundTasks, site: NotebookExecutionSite, post_req:PostReqModel = Depends(common_params)):
+    def run_notebook(site: NotebookExecutionSite, post_req:PostReqModel = Depends(common_params)):
         notebook = get_notebook(post_req)
         notebook_filename = f"{get_notebook_name(post_req)}.ipynb"
 
@@ -173,6 +168,8 @@ if run_now_enabled:
             'commit_message': 'creating file'
         })
         redirect_url = get_jupyterhub_link(site, project.attributes.get("http_url_to_repo"), branch_name, notebook_filename)
+        
+        branches_to_delete.append(branch_name)
 
-        background_tasks.add_task(delete_branch, branch_name)
+        print(f"DEBUG: Redirecting: {redirect_url}")
         return RedirectResponse(redirect_url)
