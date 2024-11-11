@@ -53,4 +53,19 @@ def shutdown_event():
     # TODO doesn't work quite right
     # shutdown handler isn't called until ctrl+c is hit twice
     on_exit()
-    
+
+
+do_not_logs = (
+    "GET / HTTP",
+)
+
+import logging
+class EndpointLoggingFilter(logging.Filter):
+    """Custom logger filter. Do not log metrics, ready endpoint."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        message = record.getMessage()
+        return all(
+            message.find(do_not_log) == -1 for do_not_log in do_not_logs
+        )
+
+logging.getLogger("uvicorn.access").addFilter(EndpointLoggingFilter())

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jugex-toolbox
+data:
+  SIIBRA_TOOLBOX_LOG_DIR: /siibra-tool-log
+  SIIBRA_TOOLBOX_DATA_DIR: /siibra-tool-data
+  SIIBRA_JURGEX_CELERY_BROKER: redis://redis:6379 
+  SIIBRA_JURGEX_CELERY_RESULT: redis://redis:6379
+  SIIBRA_CACHEDIR: /siibra-tool-data/tmp

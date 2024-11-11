@@ -1,0 +1,42 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: siibra-jugex-certificate
+spec:
+  isCA: false
+  commonName: siibra-jugex.apps.tc.humanbrainproject.eu
+  dnsNames:
+  - siibra-jugex.apps.tc.humanbrainproject.eu
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production-issuer-1
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  renewBefore: 120h0m0s
+  secretName: siibra-jugex-prod-secret
+  usages:
+  - server auth
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: neurogenpy-certificate
+spec:
+  isCA: false
+  commonName: ngpy.apps.hbp.eu
+  dnsNames:
+  - ngpy.apps.hbp.eu
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production-issuer-1
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  renewBefore: 120h0m0s
+  secretName: neurogenpy-prod-secret
+  usages:
+  - server auth
