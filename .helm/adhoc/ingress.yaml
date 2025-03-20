@@ -31,3 +31,37 @@ spec:
   - hosts:
     - ngpy.apps.hbp.eu
     secretName: neurogenpy-prod-secret
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jugex-toolbox
+spec:
+  rules:
+  - host: siibra-jugex.apps.tc.humanbrainproject.eu
+    http:
+      paths:
+      - backend:
+          service:
+            name: jugex-toolbox
+            port:
+              number: 6001
+        path: /
+        pathType: ImplementationSpecific
+  - host: ngpy.apps.hbp.eu
+    http:
+      paths:
+      - backend:
+          service:
+            name: neurogenpy-toolbox
+            port:
+              number: 6001
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - siibra-jugex.apps.tc.humanbrainproject.eu
+    secretName: siibra-jugex-prod-secret
+  - hosts:
+    - ngpy.apps.hbp.eu
+    secretName: neurogenpy-prod-secret

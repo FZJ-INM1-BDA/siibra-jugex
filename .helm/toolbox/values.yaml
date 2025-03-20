@@ -98,7 +98,7 @@ autoscaling:
 volumes: 
 - name: log-volume
   persistentVolumeClaim:
-    claimName: log-volume-claim
+    claimName: log-volume-claim-2
 - name: data-volume
   persistentVolumeClaim:
     claimName: data-volume-claim
