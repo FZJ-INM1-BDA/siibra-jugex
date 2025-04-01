@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: jugex-toolbox
 spec:
+  ingressClassName: nginx
   rules:
   - host: siibra-jugex.apps.tc.humanbrainproject.eu
     http:
@@ -37,6 +38,7 @@ kind: Ingress
 metadata:
   name: jugex-toolbox
 spec:
+  ingressClassName: nginx
   rules:
   - host: siibra-jugex.apps.tc.humanbrainproject.eu
     http:
