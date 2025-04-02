@@ -18,6 +18,28 @@ spec:
   secretName: siibra-jugex-prod-secret
   usages:
   - server auth
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: siibra-jugex-ebrains-certificate
+spec:
+  isCA: false
+  commonName: siibra-jugex.apps.ebrains.eu
+  dnsNames:
+  - siibra-jugex.apps.ebrains.eu
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production-issuer-1
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  renewBefore: 120h0m0s
+  secretName: siibra-jugex-ebrains-prod-secret
+  usages:
+  - server auth
 ---
 
 apiVersion: cert-manager.io/v1
