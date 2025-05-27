@@ -67,11 +67,36 @@ function handleSwitchEvent(event) {
         annotations: addedAnnotations
       }
     })
+    postMessage({
+      method: `sxplr.setOctantRemoval`,
+      params: {
+        flag: false
+      }
+    })
+    postMessage({
+      method: `sxplr.setAuxMeshAlpha`,
+      params: {
+        alpha: 0.2
+      }
+    })
   } else {
     postMessage({
       method: `sxplr.rmAnnotations`,
       params: {
         annotations: addedAnnotations
+      }
+    })
+    
+    postMessage({
+      method: `sxplr.setOctantRemoval`,
+      params: {
+        flag: true
+      }
+    })
+    postMessage({
+      method: `sxplr.setAuxMeshAlpha`,
+      params: {
+        alpha: 1.0
       }
     })
     addedAnnotations = []
@@ -83,6 +108,18 @@ onDestroy(() => {
     method: `sxplr.rmAnnotations`,
     params: {
       annotations: addedAnnotations
+    }
+  })
+  postMessage({
+    method: `sxplr.setOctantRemoval`,
+    params: {
+      flag: true
+    }
+  })
+  postMessage({
+    method: `sxplr.setAuxMeshAlpha`,
+    params: {
+      alpha: 1.0
     }
   })
 })
