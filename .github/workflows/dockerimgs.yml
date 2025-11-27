@@ -45,6 +45,9 @@ jobs:
 
     - name: 'Push to docker registry'
       run: |
+        echo "curl first otherwise docker login result in tls handshake timeout"
+        curl -v https://docker-registry.ebrains.eu/v2/
+
         echo "Login to docker registry"
         docker login \
           -u '${{ secrets.EBRAINS_DOCKER_REG_SIIBRA_TOOLBOX_PUSHER_USER }}' \
@@ -55,6 +58,8 @@ jobs:
     
     - name: 'Tag versioned tag to registry'
       run: |
+        echo "curl first otherwise docker login result in tls handshake timeout"
+        curl -v https://docker-registry.ebrains.eu/v2/
         
         echo "Login to docker registry"
         docker login \
