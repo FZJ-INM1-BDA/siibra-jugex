@@ -9,7 +9,7 @@ try:
     from celery import Celery
 except ImportError as e:
     logger.critical(f"Importing celery error")
-    raise e
+    raise e from e
 
 default_config="http_wrapper.conf.celeryconfig"
 app = Celery(CHANNEL)
