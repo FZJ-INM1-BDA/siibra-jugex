@@ -1,5 +1,8 @@
 <svelte:window on:message={handleMessage}/>
 
+<span>For detail, please visit </span>
+<a href="https://siibra-python.readthedocs.io/en/latest/examples/03_data_features/004_gene_expressions.html#gene-expressions">siibra-python documentation</a>
+
 {#if selectionError}
 <span>
 	{selectionError}

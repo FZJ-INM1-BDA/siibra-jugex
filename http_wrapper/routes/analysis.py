@@ -39,6 +39,7 @@ class JugexResult(BModel):
 class ResultModel(BModel):
     status: ResultStatus
     result: Optional[JugexResult]
+    error: Optional[str]
 
 
 @router.post('/analysis', response_model=PostRespModel)
@@ -54,16 +55,18 @@ def get_analysis_with_id(analysis_id: str):
 
     res = analysis.AsyncResult(analysis_id)
     if res.state == "FAILURE":
+        result = res.get()
         res.forget()
         return ResultModel(
-            status=ResultStatus.FAILURE
+            status=ResultStatus.FAILURE,
+            error=str(result),
         )
     if res.state == "SUCCESS":
         result = res.get()
         res.forget()
         return ResultModel(
             status=ResultStatus.SUCCESS,
-            result=JugexResult(**result)
+            result=JugexResult(**result),
         )
     return ResultModel(
         status=ResultStatus.PENDING

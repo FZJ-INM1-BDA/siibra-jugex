@@ -48,4 +48,4 @@ def analysis(parcellation_id: str, roi_1:str, roi_2: str, genes: List[str], perm
         }
     except Exception as e:
         logger.critical(f"{hostname}:task:failed {str(e)}")
-        raise e
+        raise
