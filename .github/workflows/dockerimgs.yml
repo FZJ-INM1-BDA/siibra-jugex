@@ -91,5 +91,46 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docker-img
     steps:
-    - name: "skip for now"
-      run: "echo skip for now"
+    - uses: actions/checkout@v4
+    - name: 'Trigger gitops pipeline'
+      run: |
+        VERSION=$(grep -Po '^__version__.*?"\K[\w.]+' http_wrapper/__init__.py)
+        if [[ -z "$VERSION" ]]
+        then
+          echo "Version population failed: $VERSION"
+          exit 1
+        fi
+        echo "Deploying jugex version $VERSION"
+
+        JUGEX_FNAME="siibra-toolbox/toolbox/values/jugex.yaml"
+
+        cat > /tmp/jugex-delta.yaml << EOF
+        image:
+          serverTag: "$VERSION"
+          workerTag: "$VERSION"
+        EOF
+
+        # filename -> delta file
+        declare -A FILES=(
+          ["$JUGEX_FNAME"]=/tmp/jugex-delta.yaml
+        )
+
+        UPDATE_FILES=$(
+          for fname in "${!FILES[@]}"; do
+            jq -cn \
+              --arg filename "$fname" \
+              --arg delta "$(base64 -w 0 "${FILES[$fname]}")" \
+              '{filename: $filename, delta: $delta}'
+          done | jq -cs '.'
+        )
+
+        echo "UPDATE_FILES: $UPDATE_FILES"
+
+        MR_TITLE="siibra-jugex $VERSION"
+
+        curl -fL -X POST \
+          --form "token=${{ secrets.JUGIT_SIIBRA_DEPLOY_PIPELINE_TRIGGER_TOKEN }}" \
+          --form "ref=main" \
+          --form "variables[UPDATE_FILES]=$UPDATE_FILES" \
+          --form "variables[MR_TITLE]=$MR_TITLE" \
+          "${{ secrets.JUGIT_URL }}/api/v4/projects/${{ secrets.JUGIT_SIIBRA_DEPLOY_PROJECT_ID }}/trigger/pipeline"
